@@ -10,6 +10,6 @@ Gem::Specification.new do |spec|
   spec.rdoc_options      << '--title' << 'ActiveTokyoCabinet - a library for using TokyoCabinet under ActiveRecord.'
   spec.extra_rdoc_files  = %w(README)
   spec.rubyforge_project = 'activetokyocabinet'
-  spec.add_dependency('rails')
+  spec.add_dependency('activerecord')
   spec.add_dependency('tokyocabinet')
 end
