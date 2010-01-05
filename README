@@ -8,7 +8,7 @@ ActiveTokyoCabinet is a library for using TokyoCabinet under ActiveRecord.
 
 ActiveTokyoCabinet depend on TokyoCabinet.
 
-see {http://1978th.net/tokyocabinet}[link:http://1978th.net/tokyocabinet/].
+see http://1978th.net/tokyocabinet/
 
 == Project Page
 
@@ -18,7 +18,7 @@ http://rubyforge.org/projects/activetokyocabi
 
 gem install activetokyocabinet
 
-see {http://gemcutter.org/gems/activetokyocabinet/}[link:http://gemcutter.org/gems/activetokyocabinet/].
+see http://gemcutter.org/gems/activetokyocabinet
 
 == Example
 === database.yml
