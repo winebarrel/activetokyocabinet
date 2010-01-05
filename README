@@ -16,7 +16,7 @@ http://rubyforge.org/projects/activetokyocabi
 
 == Install
 
-gem install zipruby
+gem install activetokyocabinet
 
 == Example
 === database.yml
