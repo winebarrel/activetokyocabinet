@@ -1,5 +1,5 @@
 Gem::Specification.new do |spec|
-  spec.name              = 'ActiveTokyoCabinet'
+  spec.name              = 'activetokyocabinet'
   spec.version           = '0.0.1'
   spec.summary           = 'ActiveTokyoCabinet is a library for using TokyoCabinet under ActiveRecord.'
   spec.files             = Dir.glob('lib/**/*') + %w(README)
