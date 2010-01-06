@@ -4,7 +4,7 @@ Copyright (c) 2010 SUGAWARA Genki <sgwr_dts@yahoo.co.jp>
 
 == Description
 
-ActiveTokyoCabinet is a library for using TokyoCabinet under ActiveRecord.
+ActiveTokyoCabinet is a library for using Tokyo(Cabinet|Tyrant) under ActiveRecord.
 
 ActiveTokyoCabinet depend on TokyoCabinet.
 
