@@ -11,5 +11,4 @@ Gem::Specification.new do |spec|
   spec.extra_rdoc_files  = %w(README)
   spec.rubyforge_project = 'activetokyocabinet'
   spec.add_dependency('activerecord')
-  spec.add_dependency('tokyocabinet')
 end
