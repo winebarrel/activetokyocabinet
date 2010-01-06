@@ -27,7 +27,7 @@ see http://gemcutter.org/gems/activetokyocabinet
       adapter: tokyocabinet
       database: path_of_database_directory
                                # ~~~~~~~~~
-    # TokyoCabinet
+    # TokyoTyrant
     development:
       adapter: tokyotyrant
       database:
