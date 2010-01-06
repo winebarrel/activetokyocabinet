@@ -5,9 +5,13 @@ require 'active_tokyocabinet/sqlparser.tab'
 module ActiveRecord
   module ConnectionAdapters
     class AbstractTokyoCabinetAdapter < AbstractAdapter
-      def initialize(connection, logger, query_clazz)
+      def initialize(connection, logger, query_klass)
         super(connection, logger)
-        @query_clazz = query_clazz
+        @query_klass = query_klass
+      end
+
+      def supports_count_distinct?
+        false
       end
 
       def select(sql, name = nil)
@@ -126,18 +130,18 @@ module ActiveRecord
           return [parsed_sql[:condition]].flatten
         end
 
-        qry = @query_clazz::new(tdb)
+        qry = @query_klass::new(tdb)
 
         condition.each do |cond|
           name, op, expr = cond.values_at(:name, :op, :expr)
-          op = @query_clazz.const_get(op)
+          op = @query_klass.const_get(op)
           expr = expr.kind_of?(Array) ? expr.join(' ') : expr.to_s
           qry.addcond(name, op, expr)
         end
 
         if order
           name, type = order.values_at(:name, :type)
-          type = @query_clazz.const_get(type)
+          type = @query_klass.const_get(type)
           qry.setorder(name, type)
         end
 

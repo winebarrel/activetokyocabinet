@@ -4,48 +4,58 @@ require 'tokyotyrant'
 module ActiveRecord
   class Base
     def self.tokyotyrant_connection(config)
-      ConnectionAdapters::TokyoTyrantAdapter.new(nil, logger, config)
+      unless config[:database]
+        raise ArgumentError, "No database file specified. Missing argument: database"
+      end
+
+      ConnectionAdapters::TokyoTyrantAdapter.new({}, logger, config)
     end
   end
 
   module ConnectionAdapters
     class TokyoTyrantAdapter < AbstractTokyoCabinetAdapter
       def initialize(connection, logger, config)
-        super(connection, logger, TokyoTyrant::RDBTBL)
-        @config = {}
+        super(connection, logger, TokyoTyrant::RDBQRY)
+        @database = {}
 
-        config.map do |k, v|
-          @config[k] = {
-            :host => v.fetch(:host).to_s,
-            :port => v.fetch(:port, 0).to_i,
-            :timeout => v.fetch(:timeout, 0).to_i,
+        config.fetch(:database).map do |table_name, attribute|
+          @database[table_name] = {
+            :host => attribute.fetch('host').to_s,
+            :port => attribute.fetch('port', 0).to_i,
+            :timeout => attribute.fetch('timeout', 0).to_i,
           }
         end
       end
 
       def table_exists?(table_name)
-        @config.has_key?(table_name)
+        @database.has_key?(table_name)
+      end
+
+      def disconnect!
+        super
+
+        @connection.keys.each do |table_name|
+          conn = @connection[table_name]
+          conn.close
+          @connection.delete(table_name)
+        end
       end
 
       def tdbopen(parsed_sql)
         table_name = parsed_sql[:table]
-        host, port, timeout = @config.fetch(table_name).values_at(:host, :port, :timeout)
 
-        tdb = TokyoTyrant::RDBTBL::new
+        unless (tdb = @connection[table_name])
+          host, port, timeout = @database.fetch(table_name).values_at(:host, :port, :timeout)
+          tdb = TokyoTyrant::RDBTBL::new
 
-        unless tdb.open(host, port, timeout)
-          ecode = tdb.ecode
-          raise "%s: %s" % [tdb.errmsg(ecode), path]
-        end
-
-        begin
-          yield(tdb)
-        ensure
-          unless tdb.close
+          unless tdb.open(host, port, timeout)
             ecode = tdb.ecode
-            raise tdb.errmsg(ecode)
+            raise "%s: %s" % [tdb.errmsg(ecode), path]
           end
         end
+
+        yield(tdb)
+        @connection[table_name] = tdb
       end
       private :tdbopen
     end
