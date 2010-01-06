@@ -28,7 +28,7 @@ module ActiveRecord
         File.exist?(path)
       end
 
-      def tdbopen(pa)
+      def tdbopen(parsed_sql)
         table_name = parsed_sql[:table]
         path = tdbpath(table_name)
 

@@ -94,13 +94,13 @@ module ActiveRecord
         return rownum
       end
 
-      def delete_sql(sql, name = nil) #:nodoc:
+      def delete_sql(sql, name = nil)
         rownum = 0
 
         log(sql, name) do
           parsed_sql = ActiveTokyoCabinet::SQLParser.new(sql).parse
 
-          tdbopen(parsed_sql[:table], TokyoCabinet::TDB::OWRITER) do |tdb|
+          tdbopen(parsed_sql) do |tdb|
             rkeys(tdb, parsed_sql)
             set_clause_list = parsed_sql[:set_clause_list]
 
@@ -147,7 +147,7 @@ module ActiveRecord
 
         return qry.search
       end
-      private :tdbqry
+      private :rkeys
     end
   end
 end
