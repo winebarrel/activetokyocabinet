@@ -6,9 +6,9 @@ Copyright (c) 2010 SUGAWARA Genki <sgwr_dts@yahoo.co.jp>
 
 ActiveTokyoCabinet is a library for using Tokyo(Cabinet|Tyrant) under ActiveRecord.
 
-ActiveTokyoCabinet depend on TokyoCabinet.
+ActiveTokyoCabinet depend on Tokyo(Cabinet|Tyrant).
 
-see http://1978th.net/tokyocabinet/
+see http://1978th.net/tokyocabinet/ , http://1978th.net/tokyotyrant/
 
 == Project Page
 
@@ -22,11 +22,17 @@ see http://gemcutter.org/gems/activetokyocabinet
 
 == Example
 === database.yml
-
+    # TokyoCabinet
     development:
       adapter: tokyocabinet
       database: path_of_database_directory
                                # ~~~~~~~~~
+    # TokyoCabinet
+    development:
+      adapter: tokyotyrant
+      database:
+        hellos: { host: localhost, port: 1978 }
+        tests: { host: localhost, port: 1979 }
 
 === Model
 
@@ -43,32 +49,37 @@ see http://gemcutter.org/gems/activetokyocabinet
 
     class HelloController < ApplicationController
       def index
+        hello_id = nil
+    
         (20..35).each do |i|
           hello = Hello.new
           hello.name = 'yamada'
-          hello.age  = 20
+          hello.age  = i
           hello.save!
+          hello_id = hello.id
         end
     
         p Hello.find(:all, 
                      :conditions => ["name = ? and age > ?", "yamada", 25],
                      :order => 'age desc', :limit => 5, :offset => 3)
     
-        hello = Hello.find(1)
-        hello.name = 'sato'
+        hello = Hello.find(hello_id)
+        hello.name = 'yamashita'
         hello.save!
     
-        p Hello.find(:first, :conditions => ["name = ?", "tanaka"])
+        p Hello.find(:first, :conditions => ["name = ?", "yamashita"])
     
-        hello = Hello.find(2)
+        hello = Hello.find(hello_id)
         hello.destroy
+    
+        p Hello.find(:first, :conditions => ["name = ?", "yamashita"])
     
         p Hello.find(:all)
     
         Hello.delete_all(["name = ? and age <= ?", "yamada", 30])
     
         p Hello.find(:all)
-    
+
         render :text => 'hello'
       end
     end
