@@ -4,8 +4,8 @@ require 'tokyotyrant'
 module ActiveRecord
   class Base
     def self.tokyotyrant_connection(config)
-      unless config[:database]
-        raise ArgumentError, "No database file specified. Missing argument: database"
+      unless config[:database].kind_of?(Hash)
+        raise ArgumentError, "Incorrect argument: database"
       end
 
       ConnectionAdapters::TokyoTyrantAdapter.new({}, logger, config)
@@ -23,7 +23,7 @@ module ActiveRecord
             attribute[k.to_s] = attribute[k]
           end
 
-          @database[table_name] = {
+          @database[table_name.to_s] = {
             :host => attribute.fetch('host').to_s,
             :port => attribute.fetch('port', 0).to_i,
             :timeout => attribute.fetch('timeout', 0).to_i,
@@ -47,6 +47,10 @@ module ActiveRecord
 
       def tdbopen(parsed_sql)
         table_name = parsed_sql[:table]
+
+        unless table_exists?(table_name)
+          raise "Table does not exist: #{table_name}"
+        end
 
         unless (tdb = @connection[table_name])
           host, port, timeout = @database.fetch(table_name).values_at(:host, :port, :timeout)

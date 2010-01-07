@@ -4,8 +4,8 @@ require 'tokyocabinet'
 module ActiveRecord
   class Base
     def self.tokyocabinet_connection(config)
-      unless config[:database]
-        raise ArgumentError, "No database file specified. Missing argument: database"
+      unless config[:database].kind_of?(String)
+        raise ArgumentError, "Incorrect argument: database"
       end
 
       if Object.const_defined?(:RAILS_ROOT)
