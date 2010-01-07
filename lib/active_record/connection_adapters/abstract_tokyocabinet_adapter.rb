@@ -28,7 +28,10 @@ module ActiveRecord
               next if rcols.nil?
 
               unless select_list.nil? or select_list.empty?
-                rcols = select_list.each {|k| r[k] = rcols[k] }
+                rcols = select_list.each do |k|
+                  k = k.split('.').last
+                  r[k] = rcols[k]
+                end
               end
 
               rcols['id'] = rkey
@@ -57,6 +60,7 @@ module ActiveRecord
             cols = {}
 
             keys.zip(vals).each do |k, v|
+              k.split('.').last
               cols[k] = v.to_s
             end
 
@@ -82,6 +86,7 @@ module ActiveRecord
               rcols = tdb.get(rkey)
 
               set_clause_list.each do |k, v|
+                k.split('.').last
                 rcols[k] = v.to_s
               end
 
@@ -105,9 +110,6 @@ module ActiveRecord
           parsed_sql = ActiveTokyoCabinet::SQLParser.new(sql).parse
 
           tdbopen(parsed_sql) do |tdb|
-            rkeys(tdb, parsed_sql)
-            set_clause_list = parsed_sql[:set_clause_list]
-
             rkeys(tdb, parsed_sql).each do |rkey|
               rownum += 1
 
@@ -134,6 +136,7 @@ module ActiveRecord
 
         condition.each do |cond|
           name, op, expr = cond.values_at(:name, :op, :expr)
+          name = name.split('.').last
           op = @query_klass.const_get(op)
           expr = expr.kind_of?(Array) ? expr.join(' ') : expr.to_s
           qry.addcond(name, op, expr)

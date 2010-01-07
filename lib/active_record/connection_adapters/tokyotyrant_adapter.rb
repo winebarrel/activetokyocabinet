@@ -19,6 +19,10 @@ module ActiveRecord
         @database = {}
 
         config.fetch(:database).map do |table_name, attribute|
+          attribute.keys.each do |k|
+            attribute[k.to_s] = attribute[k]
+          end
+
           @database[table_name] = {
             :host => attribute.fetch('host').to_s,
             :port => attribute.fetch('port', 0).to_i,
