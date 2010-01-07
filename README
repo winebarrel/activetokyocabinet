@@ -83,3 +83,6 @@ see http://gemcutter.org/gems/activetokyocabinet
         render :text => 'hello'
       end
     end
+
+== Related article
+* http://d.hatena.ne.jp/winebarrel/20100106/p1
