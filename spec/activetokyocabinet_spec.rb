@@ -25,6 +25,13 @@ describe 'tokyocabinet:' do
     validate_employee(data, employees[0])
   end
 
+  it "employees has a one data (empno = 7521)" do
+    employees = Employee.find(:all, :conditions => ['empno = ?', 7521])
+    employees.length.should == 1
+    data = employee_data.find {|i| i[EMP_EMPNO] == 7521 }
+    validate_employee(data, employees[0])
+  end
+
   it 'employees has any data' do
     employee_data.each_with_index do |data, i|
       employee_id = i + 1
@@ -79,6 +86,13 @@ describe 'tokyocabinet:' do
     departments = Department.find(:all, :conditions => ['dname = ?', 'SALES'])
     departments.length.should == 1
     data = department_data.find {|i| i[DEPT_DNAME] == 'SALES' }
+    validate_department(data, departments[0])
+  end
+
+  it "departments has a one data (deptno = 20)" do
+    departments = Department.find(:all, :conditions => ['deptno = ?', 20])
+    departments.length.should == 1
+    data = department_data.find {|i| i[DEPT_DEPTNO] == 20 }
     validate_department(data, departments[0])
   end
 
