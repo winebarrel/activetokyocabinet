@@ -13,7 +13,7 @@ describe 'tokyocabinet:' do
     TokyoCabinetSpec.setup_department
   end
 
-  it 'employees length > 0' do
+  it "employees length > 0" do
     employees = Employee.find(:all)
     employees.length.should == employee_data.length
   end
@@ -51,17 +51,29 @@ describe 'tokyocabinet:' do
     validate_employee(data, employees[0])
   end
 
-  it 'employees has any data' do
+  it "employees has any data" do
     employee_data.each_with_index do |data, i|
       employee_id = i + 1
       employee = Employee.find(employee_id)
 
+      employee.should_not be_nil
       employee.id.should == employee_id
       validate_employee(data, employee)
     end
   end
 
-  it 'employees has any data (id=1,2,3)' do
+  it "employees has any data (job = 'SALESMAN')" do
+    employees = Employee.find(:all, :conditions => ['job = ?', 'SALESMAN'])
+
+    employees.each do |employee|
+      data = employee_data[employee.id - 1]
+
+      data.should_not be_nil
+      validate_employee(data, employee)
+    end
+  end
+
+  it "employees has any data (id=1,2,3)" do
     employees = Employee.find([1, 2, 3])
     employees.length.should == 3
 
@@ -76,12 +88,13 @@ describe 'tokyocabinet:' do
     end
   end
 
-  it 'employees has any data ([])' do
+  it "employees has any data ([])" do
     employee_data.each_with_index do |data, i|
       empno, ename, job, mgr, hiredate, sal, comm, deptno = data
       employee_id = i + 1
       employee = Employee.find(employee_id)
 
+      employee.should_not be_nil
       employee[:id].should       == employee_id
       employee[:empno].should    == empno.to_s
       employee[:ename].should    == ename.to_s
@@ -96,7 +109,7 @@ describe 'tokyocabinet:' do
 
   # -------------------------------------------------------------------
 
-  it 'departments length > 0' do
+  it "departments length > 0" do
     departments = Department.find(:all)
     departments.length.should == department_data.length
   end
@@ -134,27 +147,51 @@ describe 'tokyocabinet:' do
     validate_department(data, departments[0])
   end
 
-  it 'departments has any data' do
+  it "departments has any data" do
     department_data.each_with_index do |data, i|
       department_id = i + 1
       department = Department.find(department_id)
 
+      department.should_not be_nil
       department.id.should == department_id
       validate_department(data, department)
     end
   end
 
-  it 'departments has any data' do
+  it "departments has any data" do
     department_data.each_with_index do |data, i|
       department_id = i + 1
       department = Department.find(department_id)
 
+      department.should_not be_nil
       department.id.should == department_id
       validate_department(data, department)
     end
   end
 
-  it 'departments has any data (id=1,2,3)' do
+  it "department has any data (loc in ('NEW YORK', 'CHICAGO'))" do
+    departments = Department.find(:all, :conditions => ['loc in (?)', ['NEW YORK', 'CHICAGO']])
+
+    departments.each do |department|
+      data = department_data[department.id - 1]
+
+      data.should_not be_nil
+      validate_department(data, department)
+    end
+  end
+
+  it "department has any data ({:loc => ['NEW YORK', 'CHICAGO']})" do
+    departments = Department.find(:all, :conditions => {:loc =>  ['NEW YORK', 'CHICAGO']})
+
+    departments.each do |department|
+      data = department_data[department.id - 1]
+
+      data.should_not be_nil
+      validate_department(data, department)
+    end
+  end
+
+  it "departments has any data (id=1,2,3)" do
     departments = Department.find([1, 2, 3])
     departments.length.should == 3
 

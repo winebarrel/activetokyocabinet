@@ -34,7 +34,7 @@ module ActiveRecord
                 end
               end
 
-              rcols['id'] = rkey
+              rcols['id'] = rkey.to_i
               rows << rcols
             end
           end
