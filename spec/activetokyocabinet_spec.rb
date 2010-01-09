@@ -36,6 +36,28 @@ describe 'tokyocabinet:' do
     end
   end
 
+  it 'employees has any data (id=1,2,3)' do
+    employees = Employee.find([1, 2, 3])
+    employees.length.should == 3
+
+    employee_data[0..2].each_with_index do |data, i|
+      empno, ename, job, mgr, hiredate, sal, comm, deptno = data
+      employee_id = i + 1
+      employee = employees.find {|i| i.id == employee_id }
+      employee.should_not be_nil
+
+      employee.id.should       == employee_id
+      employee.empno.should    == empno
+      employee.ename.should    == ename
+      employee.job.should      == job
+      employee.mgr.should      == mgr
+      employee.hiredate.should == hiredate
+      employee.sal.should      == sal
+      employee.comm.should     == comm
+      employee.deptno.should   == deptno
+    end
+  end
+
   it 'employees has any data ([])' do
     employee_data.each_with_index do |data, i|
       empno, ename, job, mgr, hiredate, sal, comm, deptno = data
@@ -85,8 +107,24 @@ describe 'tokyocabinet:' do
     end
   end
 
+  it 'departments has any data (id=1,2,3)' do
+    departments = Department.find([1, 2, 3])
+    departments.length.should == 3
+
+    department_data[0..2].each_with_index do |data, i|
+      deptno, dname, loc = data
+      department_id = i + 1
+      department = departments.find {|i| i.id == department_id }
+      department.should_not be_nil
+
+      department[:id].should     == department_id
+      department[:deptno].should == deptno.to_s
+      department[:dname].should  == dname.to_s
+      department[:loc].should    == loc.to_s
+    end
+  end
+
   after do
     TokyoCabinetSpec.clean
-    @empty_array = nil
   end
 end
