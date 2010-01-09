@@ -1,7 +1,7 @@
 module ActiveTokyoCabinet
   module TDB
     def self.included(mod)
-      {:string => :to_s, :int => :to_i, :float => :to_s}.each do |type, conv|
+      {:string => :to_s, :int => :to_i, :float => :to_f}.each do |type, conv|
         mod.instance_eval %{
           def #{type}(name)
             unless @columns
@@ -11,7 +11,7 @@ module ActiveTokyoCabinet
             end
 
             @columns << ActiveRecord::ConnectionAdapters::Column.new(name.to_s, nil)
-            class_eval "def \#{name}; v = self[:\#{name}]; v && v.#{conv}; end"
+            class_eval "def \#{name}; v = self[:\#{name}]; (v.nil? || v.empty?) ? nil : v.#{conv}; end"
           end
         }
       end
