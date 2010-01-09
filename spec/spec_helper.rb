@@ -8,6 +8,19 @@ require "#{$wd}/models/employee"
 require "#{$wd}/models/department"
 
 module SpecHelper
+  EMP_EMPNO    = 0
+  EMP_ENAME    = 1
+  EMP_JOB      = 2
+  EMP_MGR      = 3
+  EMP_HIREDATE = 4
+  EMP_SAL      = 5
+  EMP_COMM     = 6
+  EMP_DEPTNO   = 7
+
+  DEPT_DEPTNO = 0
+  DEPT_DNAME  = 1
+  DEPT_LOC    = 2
+
   def desc(klass, out = $stdout)
     rows = klass.find(:all)
 
@@ -77,6 +90,23 @@ EOS
       [ 40, 'OPERATIONS', 'BOSTON'  ],
       [nil, nil         ,  nil      ],
     ]
+  end
+
+  def validate_employee(expected, employee)
+    employee.empno.should    == expected[EMP_EMPNO]
+    employee.ename.should    == expected[EMP_ENAME]
+    employee.job.should      == expected[EMP_JOB]
+    employee.mgr.should      == expected[EMP_MGR]
+    employee.hiredate.should == expected[EMP_HIREDATE]
+    employee.sal.should      == expected[EMP_SAL]
+    employee.comm.should     == expected[EMP_COMM]
+    employee.deptno.should   == expected[EMP_DEPTNO]
+  end
+
+  def validate_department(expected, department)
+    department.deptno.should == expected[DEPT_DEPTNO]
+    department.dname.should  == expected[DEPT_DNAME]
+    department.loc.should    == expected[DEPT_LOC]
   end
 end # SpecHelper
 

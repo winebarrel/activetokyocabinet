@@ -18,21 +18,20 @@ describe 'tokyocabinet:' do
     employees.length.should == employee_data.length
   end
 
+  it "employees has a one data (ename = 'SMITH')" do
+    employees = Employee.find(:all, :conditions => ['ename = ?', 'SMITH'])
+    employees.length.should == 1
+    data = employee_data.find {|i| i[EMP_ENAME] == 'SMITH' }
+    validate_employee(data, employees[0])
+  end
+
   it 'employees has any data' do
     employee_data.each_with_index do |data, i|
-      empno, ename, job, mgr, hiredate, sal, comm, deptno = data
       employee_id = i + 1
       employee = Employee.find(employee_id)
 
-      employee.id.should       == employee_id
-      employee.empno.should    == empno
-      employee.ename.should    == ename
-      employee.job.should      == job
-      employee.mgr.should      == mgr
-      employee.hiredate.should == hiredate
-      employee.sal.should      == sal
-      employee.comm.should     == comm
-      employee.deptno.should   == deptno
+      employee.id.should == employee_id
+      validate_employee(data, employee)
     end
   end
 
@@ -44,17 +43,10 @@ describe 'tokyocabinet:' do
       empno, ename, job, mgr, hiredate, sal, comm, deptno = data
       employee_id = i + 1
       employee = employees.find {|i| i.id == employee_id }
-      employee.should_not be_nil
 
-      employee.id.should       == employee_id
-      employee.empno.should    == empno
-      employee.ename.should    == ename
-      employee.job.should      == job
-      employee.mgr.should      == mgr
-      employee.hiredate.should == hiredate
-      employee.sal.should      == sal
-      employee.comm.should     == comm
-      employee.deptno.should   == deptno
+      employee.should_not be_nil
+      employee.id.should == employee_id
+      validate_employee(data, employee)
     end
   end
 
@@ -76,34 +68,37 @@ describe 'tokyocabinet:' do
     end
   end
 
+  # -------------------------------------------------------------------
+
   it 'departments length > 0' do
     departments = Department.find(:all)
     departments.length.should == department_data.length
   end
 
+  it "departments has a one data (dname = 'SALES')" do
+    departments = Department.find(:all, :conditions => ['dname = ?', 'SALES'])
+    departments.length.should == 1
+    data = department_data.find {|i| i[DEPT_DNAME] == 'SALES' }
+    validate_department(data, departments[0])
+  end
+
   it 'departments has any data' do
     department_data.each_with_index do |data, i|
-      deptno, dname, loc = data
       department_id = i + 1
       department = Department.find(department_id)
 
-      department.id.should     == department_id
-      department.deptno.should == deptno
-      department.dname.should  == dname
-      department.loc.should    == loc
+      department.id.should == department_id
+      validate_department(data, department)
     end
   end
 
   it 'departments has any data' do
     department_data.each_with_index do |data, i|
-      deptno, dname, loc = data
       department_id = i + 1
       department = Department.find(department_id)
 
-      department[:id].should     == department_id
-      department[:deptno].should == deptno.to_s
-      department[:dname].should  == dname.to_s
-      department[:loc].should    == loc.to_s
+      department.id.should == department_id
+      validate_department(data, department)
     end
   end
 
@@ -115,8 +110,8 @@ describe 'tokyocabinet:' do
       deptno, dname, loc = data
       department_id = i + 1
       department = departments.find {|i| i.id == department_id }
-      department.should_not be_nil
 
+      department.should_not be_nil
       department[:id].should     == department_id
       department[:deptno].should == deptno.to_s
       department[:dname].should  == dname.to_s
