@@ -232,6 +232,17 @@ describe 'tokyocabinet:' do
     end
   end
 
+  it "departments has any data (order by deptno numdesc limit 65535 offset 1)" do
+    departments = Department.find(:all, :order => 'deptno numdesc', :limit => 65535, :offset => 1)
+    departments.length.should == department_data.length - 1
+
+    department_data.sort_by {|i| i[DEPT_DEPTNO] || 0 }.reverse[1..-1].each do |data|
+      department = departments.find {|i| i.id == data.id }
+      department.should_not be_nil
+      validate_department(data, department)
+    end
+  end
+
   after do
     TokyoCabinetSpec.clean
   end
