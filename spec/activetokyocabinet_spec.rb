@@ -243,6 +243,17 @@ describe 'tokyocabinet:' do
     end
   end
 
+  it "departments has any data (order by deptno numasc)" do
+    departments = Department.find(:all, :order => 'deptno numasc')
+    departments.length.should == department_data.length
+
+    department_data.sort_by {|i| i[DEPT_DEPTNO] || 0 }.each do |data|
+      department = departments.find {|i| i.id == data.id }
+      department.should_not be_nil
+      validate_department(data, department)
+    end
+  end
+
   after do
     TokyoCabinetSpec.clean
   end

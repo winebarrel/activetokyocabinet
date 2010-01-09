@@ -1,12 +1,16 @@
 require 'rubygems'
-require 'pp'
 require 'fileutils'
+require 'logger'
+require 'pp'
 require 'tokyocabinet'
 require 'tokyotyrant'
 require 'active_record'
 require 'active_tokyocabinet/tdb'
 require "#{$wd}/models/employee"
 require "#{$wd}/models/department"
+
+ActiveRecord::Base.logger = Logger.new($stderr)
+ActiveRecord::Base.logger.level = Logger::INFO
 
 module SpecHelper
   EMP_EMPNO    = 0
@@ -21,6 +25,15 @@ module SpecHelper
   DEPT_DEPTNO = 0
   DEPT_DNAME  = 1
   DEPT_LOC    = 2
+
+  def show_sql
+    begin
+      ActiveRecord::Base.logger.level = Logger::DEBUG
+      yield
+    ensure
+      ActiveRecord::Base.logger.level = Logger::INFO
+    end
+  end
 
   def desc(klass, out = $stdout)
     if klass.kind_of?(Array)
