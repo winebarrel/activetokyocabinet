@@ -61,7 +61,7 @@ module ActiveTokyoCabinetSpec
       establish_connection
 
       data = [
-        [7369, 'SMITH', 'CLERK',  7902, '17-DEC-1980', 800.0, 800.0, 20],
+        [7369, 'SMITH', 'CLERK',  7902, '17-DEC-1980', 800.0, nil, 20],
       ]
 
       data.each do |row|
