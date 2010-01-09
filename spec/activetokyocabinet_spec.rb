@@ -5,7 +5,7 @@ require 'spec_helper'
 include SpecHelper
 include ActiveTokyoCabinetSpec
 
-describe 'tokyocabinet' do
+describe 'tokyocabinet:' do
   before do
     TokyoCabinetSpec.establish_connection
     TokyoCabinetSpec.create_tables
@@ -13,17 +13,18 @@ describe 'tokyocabinet' do
     TokyoCabinetSpec.setup_department
   end
 
-  it 'length > 0' do
+  it 'employees length > 0' do
     employees = Employee.find(:all)
-    employees.length.should == 14
+    employees.length.should == employee_data.length
   end
 
-  it 'any data (getter)' do
+  it 'employees has any data (getter)' do
     employee_data.each_with_index do |data, i|
       empno, ename, job, mgr, hiredate, sal, comm, deptno = data
       employee_id = i + 1
       employee = Employee.find(employee_id)
 
+      employee.id.should       == employee_id
       employee.empno.should    == empno
       employee.ename.should    == ename
       employee.job.should      == job
@@ -32,6 +33,24 @@ describe 'tokyocabinet' do
       employee.sal.should      == sal
       employee.comm.should     == comm
       employee.deptno.should   == deptno
+    end
+  end
+
+  it 'departments length > 0' do
+    departments = Department.find(:all)
+    departments.length.should == department_data.length
+  end
+
+  it 'departments has any data (getter)' do
+    department_data.each_with_index do |data, i|
+      deptno, dname, loc = data
+      department_id = i + 1
+      department = Department.find(department_id)
+
+      department.id.should     == department_id
+      department.deptno.should == deptno
+      department.dname.should  == dname
+      department.loc.should    == loc
     end
   end
 
