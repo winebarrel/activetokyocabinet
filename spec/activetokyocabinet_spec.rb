@@ -181,14 +181,17 @@ describe 'tokyocabinet:' do
     end
   end
 
-  it "departments has any data" do
+  it "departments has any data ([])" do
     department_data.each_with_index do |data, i|
+      deptno, dname, loc = data
       department_id = i + 1
       department = Department.find(department_id)
 
       department.should_not be_nil
-      department.id.should == department_id
-      validate_department(data, department)
+      department[:id].should     == department_id
+      department[:deptno].should == deptno.to_s
+      department[:dname].should  == dname.to_s
+      department[:loc].should    == loc.to_s
     end
   end
 
@@ -225,10 +228,7 @@ describe 'tokyocabinet:' do
       department = departments.find {|i| i.id == department_id }
 
       department.should_not be_nil
-      department[:id].should     == department_id
-      department[:deptno].should == deptno.to_s
-      department[:dname].should  == dname.to_s
-      department[:loc].should    == loc.to_s
+      validate_department(data, department)
     end
   end
 
