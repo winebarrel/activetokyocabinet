@@ -18,11 +18,8 @@ module SpecHelper
 
     cols = {}
 
-    rows.first.attributes.keys.each do |col, val|
-      col = col.to_s
-      val = val.to_s
-      len = col.length > val.length ? col.length : val.length
-      cols[col] = len
+    klass.instance_variable_get(:@columns).each do |col|
+      cols[col.name] = col.name.to_s.length
     end
 
     rows.each do |row|
@@ -31,6 +28,10 @@ module SpecHelper
         cols[col] = val.length if val.length > cols[col]
       end
     end
+
+    id_len = cols.delete('id')
+    cols = cols.map {|k, v| [k, v] }
+    cols.unshift ['id', id_len]
 
     line = cols.map {|col, len| '+' + '-' * len }.join + '+'
     head = cols.map {|col, len| "|%-*s" % [len, col] }.join + '|'
