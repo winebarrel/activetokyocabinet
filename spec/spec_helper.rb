@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'pp'
 require 'fileutils'
 require 'tokyocabinet'
 require 'tokyotyrant'
@@ -22,11 +23,19 @@ module SpecHelper
   DEPT_LOC    = 2
 
   def desc(klass, out = $stdout)
-    rows = klass.find(:all)
+    if klass.kind_of?(Array)
+      rows = klass
+    else
+      rows = klass.find(:all)
+    end
 
     if rows.empty?
       out.puts "Empty set"
       return
+    end
+
+    if klass.kind_of?(Array)
+      klass = rows.first.class
     end
 
     cols = {}
@@ -63,7 +72,7 @@ EOS
   end
 
   def employee_data
-    [
+    data = [
       [7369, 'SMITH' , 'CLERK'    , 7902, '17-DEC-1980',  800.0,    nil,  20],
       [7499, 'ALLEN' , 'SALESMAN' , 7698, '20-FEB-1981', 1600.0,  300.0,  30],
       [7521, 'WARD'  , 'SALESMAN' , 7698, '22-FEB-1981', 1250.0,  500.0,  30],
@@ -80,16 +89,28 @@ EOS
       [7934, 'MILLER', 'CLERK'    , 7782, '23-JAN-1982', 1300.0,    nil,  10],
       [ nil, nil     , nil        ,  nil,  nil         ,    nil,    nil, nil],
     ]
+
+    data.each_with_index do |i, n|
+      i.instance_eval "def id; #{n + 1}; end"
+    end
+
+    return data
   end
 
   def department_data
-    [
+    data = [
       [ 10, 'ACCOUNTING', 'NEW YORK'],
       [ 20, 'RESEARCH'  , 'DALLAS'  ],
       [ 30, 'SALES'     , 'CHICAGO' ],
       [ 40, 'OPERATIONS', 'BOSTON'  ],
       [nil, nil         ,  nil      ],
     ]
+
+    data.each_with_index do |i, n|
+      i.instance_eval "def id; #{n + 1}; end"
+    end
+
+    return data
   end
 
   def validate_employee(expected, employee)

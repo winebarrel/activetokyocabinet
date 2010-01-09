@@ -107,8 +107,8 @@ def tcordertype(type)
   case type.upcase
   when 'ASC', 'STRASC'
     :QOSTRASC
-  when 'DESC', 'STRASC'
-    :QOSTRASC
+  when 'DESC', 'STRDESC'
+    :QOSTRDESC
   when 'NUMASC'
     :QONUMASC
   when 'NUMDESC'

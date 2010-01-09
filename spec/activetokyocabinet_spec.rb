@@ -69,6 +69,7 @@ describe 'tokyocabinet:' do
       data = employee_data[employee.id - 1]
 
       data.should_not be_nil
+      data[EMP_JOB].should == 'SALESMAN'
       validate_employee(data, employee)
     end
   end
@@ -84,6 +85,28 @@ describe 'tokyocabinet:' do
 
       employee.should_not be_nil
       employee.id.should == employee_id
+      validate_employee(data, employee)
+    end
+  end
+
+  it "employees has any data (order by ename desc limit 3)" do
+    employees = Employee.find(:all, :order => 'ename desc', :limit => 3)
+    employees.length.should == 3
+
+    employee_data.sort_by {|i| i[EMP_ENAME] || '' }.reverse[0..2].each do |data|
+      employee = employees.find {|i| i.id == data.id }
+      employee.should_not be_nil
+      validate_employee(data, employee)
+    end
+  end
+
+  it "employees has any data (order by ename desc limit 4 offset 5)" do
+    employees = Employee.find(:all, :order => 'ename desc', :limit => 4, :offset => 5)
+    employees.length.should == 4
+
+    employee_data.sort_by {|i| i[EMP_ENAME] || '' }.reverse[5..8].each do |data|
+      employee = employees.find {|i| i.id == data.id }
+      employee.should_not be_nil
       validate_employee(data, employee)
     end
   end
@@ -187,6 +210,7 @@ describe 'tokyocabinet:' do
       data = department_data[department.id - 1]
 
       data.should_not be_nil
+      ['NEW YORK', 'CHICAGO'].should include(data[DEPT_LOC])
       validate_department(data, department)
     end
   end
