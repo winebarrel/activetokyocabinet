@@ -32,6 +32,25 @@ describe 'tokyocabinet:' do
     validate_employee(data, employees[0])
   end
 
+  it "employees has no data (ename = 'SMITH' and job = 'SALESMAN')" do
+    employees = Employee.find(:all, :conditions => ['ename = ? and job = ?', 'SMITH', 'SALESMAN'])
+    employees.should be_empty
+  end
+
+  it "employees a one data (ename = 'TURNER' and job = 'SALESMAN')" do
+    employees = Employee.find(:all, :conditions => ['ename = ? and job = ?', 'TURNER', 'SALESMAN'])
+    employees.length.should == 1
+    data = employee_data.find {|i| i[EMP_ENAME] == 'TURNER' and i[EMP_JOB] == 'SALESMAN' }
+    validate_employee(data, employees[0])
+  end
+
+  it "employees a one data ({:ename => 'TURNER', :job => 'SALESMAN'})" do
+    employees = Employee.find(:all, :conditions => {:ename => 'TURNER', :job => 'SALESMAN'})
+    employees.length.should == 1
+    data = employee_data.find {|i| i[EMP_ENAME] == 'TURNER' and i[EMP_JOB] == 'SALESMAN' }
+    validate_employee(data, employees[0])
+  end
+
   it 'employees has any data' do
     employee_data.each_with_index do |data, i|
       employee_id = i + 1
@@ -93,6 +112,25 @@ describe 'tokyocabinet:' do
     departments = Department.find(:all, :conditions => ['deptno = ?', 20])
     departments.length.should == 1
     data = department_data.find {|i| i[DEPT_DEPTNO] == 20 }
+    validate_department(data, departments[0])
+  end
+
+  it "departments has no data (deptno = 20 and loc = 'BOSTON')" do
+    departments = Department.find(:all, :conditions => ['deptno = ? and loc = ?', 20, 'BOSTON'])
+    departments.should be_empty
+  end
+
+  it "departments has a one data (deptno = 40 and loc = 'BOSTON')" do
+    departments = Department.find(:all, :conditions => ['deptno = ? and loc = ?', 40, 'BOSTON'])
+    departments.length.should == 1
+    data = department_data.find {|i| i[DEPT_DEPTNO] == 40 and i[DEPT_LOC] == 'BOSTON' }
+    validate_department(data, departments[0])
+  end
+
+  it "departments has a one data ({:deptno => 40. :loc => 'BOSTON'})" do
+    departments = Department.find(:all, :conditions => {:deptno => 40, :loc => 'BOSTON'})
+    departments.length.should == 1
+    data = department_data.find {|i| i[DEPT_DEPTNO] == 40 and i[DEPT_LOC] == 'BOSTON' }
     validate_department(data, departments[0])
   end
 
