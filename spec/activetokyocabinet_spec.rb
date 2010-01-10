@@ -122,6 +122,17 @@ describe 'tokyocabinet:' do
     end
   end
 
+  it "employees has any data (ename EW 'ES')" do
+    employees = Employee.find(:all, :conditions => ['ename EW ?', 'ES'])
+    employees.length.should == 2
+
+    employee_data.select {|i| i[EMP_ENAME] =~ /ES\Z/ }.each do |data|
+      employee = employees.find {|i| i.id == data.id }
+      employee.should_not be_nil
+      validate_employee(data, employee)
+    end
+  end
+
   it "employees has any data ([])" do
     employee_data.each do |data|
       empno, ename, job, mgr, hiredate, sal, comm, deptno = data
