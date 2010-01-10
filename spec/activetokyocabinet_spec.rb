@@ -271,9 +271,10 @@ describe 'tokyocabinet:' do
 
   it "departments has any data (id=1,2,3)" do
     departments = Department.find([1, 2, 3])
-    departments.length.should == 3
+    data_list = department_data[0..2]
+    departments.length.should == data_list.length
 
-    department_data[0..2].each do |data|
+    data_list.each do |data|
       deptno, dname, loc = data
       department_id = data.id
       department = departments.find {|i| i.id == department_id }
@@ -285,9 +286,10 @@ describe 'tokyocabinet:' do
 
   it "departments has any data (order by deptno numdesc limit 65535 offset 1)" do
     departments = Department.find(:all, :order => 'deptno numdesc', :limit => 65535, :offset => 1)
-    departments.length.should == department_data.length - 1
+    data_list = department_data.sort_by {|i| i[DEPT_DEPTNO] || 0 }.reverse[1..-1]
+    departments.length.should == data_list.length
 
-    department_data.sort_by {|i| i[DEPT_DEPTNO] || 0 }.reverse[1..-1].each do |data|
+    data_list.each do |data|
       department = departments.find {|i| i.id == data.id }
       department.should_not be_nil
       validate_department(data, department)
@@ -296,9 +298,10 @@ describe 'tokyocabinet:' do
 
   it "departments has any data (order by deptno numasc)" do
     departments = Department.find(:all, :order => 'deptno numasc')
-    departments.length.should == department_data.length
+    data_list = department_data.sort_by {|i| i[DEPT_DEPTNO] || 0 }
+    departments.length.should == data_list.length
 
-    department_data.sort_by {|i| i[DEPT_DEPTNO] || 0 }.each do |data|
+    data_list.each do |data|
       department = departments.find {|i| i.id == data.id }
       department.should_not be_nil
       validate_department(data, department)
@@ -307,9 +310,10 @@ describe 'tokyocabinet:' do
 
   it "departments has any data (deptno between 20 and 30)" do
     departments = Department.find(:all, :conditions => ['deptno between ? and ?', 20, 30])
-    departments.length.should == 2
+    data_list = department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }
+    departments.length.should == data_list.length
 
-    department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }.each do |data|
+    data_list.each do |data|
       department = departments.find {|i| i.id == data.id }
       department.should_not be_nil
       validate_department(data, department)
@@ -318,9 +322,10 @@ describe 'tokyocabinet:' do
 
   it "departments has any data (deptno bt (?) [20, 30])" do
     departments = Department.find(:all, :conditions => ['deptno bt (?)', [20, 30]])
-    departments.length.should == 2
+    data_list = department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }
+    departments.length.should == data_list.length
 
-    department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }.each do |data|
+    data_list.each do |data|
       department = departments.find {|i| i.id == data.id }
       department.should_not be_nil
       validate_department(data, department)
@@ -329,9 +334,10 @@ describe 'tokyocabinet:' do
 
   it "departments has any data (deptno bt (?, ?) [20, 30])" do
     departments = Department.find(:all, :conditions => ['deptno bt (?, ?)', 20, 30])
-    departments.length.should == 2
+    data_list = department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }
+    departments.length.should == data_list.length
 
-    department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }.each do |data|
+    data_list.each do |data|
       department = departments.find {|i| i.id == data.id }
       department.should_not be_nil
       validate_department(data, department)
