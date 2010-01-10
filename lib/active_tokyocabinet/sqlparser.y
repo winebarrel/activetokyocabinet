@@ -180,7 +180,7 @@ rule
                         | INCANY
                         | INC
                         | IN
-                        | EQANY
+                        | ANYONE
                         | REGEXP
                         | BT
                         | FTS
@@ -214,7 +214,7 @@ def scan
   until @ss.eos?
     if (tok = @ss.scan /\s+/)
       # nothing to do
-    elsif (tok = @ss.scan /(?:BW|EW|INCALL|INCANY|INC|IN|EQANY|REGEXP|BT|BETWEEN|FTS|FTSALL|FTSANY|FTSEX)\b/i)
+    elsif (tok = @ss.scan /(?:BW|EW|INCALL|INCANY|INC|IN|ANYONE|REGEXP|BT|BETWEEN|FTS|FTSALL|FTSANY|FTSEX)\b/i)
       yield tok.upcase.to_sym, tok
     elsif (tok = @ss.scan /(?:>=|<=|>|<|=)/)
       yield tok, tok
@@ -263,7 +263,7 @@ def tccond(op, expr)
     :QCSTRAND
   when 'INCANY'
     :QCSTROR
-  when 'IN', 'EQANY'
+  when 'IN', 'ANYONE'
     expr.all? {|i| i.kind_of?(Numeric) } ? :QCNUMOREQ : :QCSTROREQ
   when 'REGEXP'
     :QCSTRRX

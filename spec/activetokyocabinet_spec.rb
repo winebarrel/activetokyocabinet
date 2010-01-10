@@ -162,6 +162,54 @@ describe 'tokyocabinet:' do
     end
   end
 
+  it "employees has any data (job incany ('ANALYST', 'MANAGER'))" do
+    employees = Employee.find(:all, :conditions => ['job incany (?)', ['ANALYST', 'MANAGER']])
+    data_list = employee_data.select {|i| i[EMP_JOB] =~ /ANALYST/ or i[EMP_JOB] =~ /MANAGER/ }
+    employees.length.should == data_list.length
+
+    data_list.each do |data|
+      employee = employees.find {|i| i.id == data.id }
+      employee.should_not be_nil
+      validate_employee(data, employee)
+    end
+  end
+
+  it "employees has any data (job in ('ANALYST', 'MANAGER'))" do
+    employees = Employee.find(:all, :conditions => ['job in (?)', ['ANALYST', 'MANAGER']])
+    data_list = employee_data.select {|i| i[EMP_JOB] == 'ANALYST' or i[EMP_JOB] == 'MANAGER' }
+    employees.length.should == data_list.length
+
+    data_list.each do |data|
+      employee = employees.find {|i| i.id == data.id }
+      employee.should_not be_nil
+      validate_employee(data, employee)
+    end
+  end
+
+  it "employees has any data (empno in (7934, 7935, 7936))" do
+    employees = Employee.find(:all, :conditions => ['empno in (?)', [7934, 7935, 7936]])
+    data_list = employee_data.select {|i| [7934, 7935, 7936].include?(i[EMP_EMPNO]) }
+    employees.length.should == data_list.length
+
+    data_list.each do |data|
+      employee = employees.find {|i| i.id == data.id }
+      employee.should_not be_nil
+      validate_employee(data, employee)
+    end
+  end
+
+  it "employees has any data (job anyone ('ANALYST', 'MANAGER'))" do
+    employees = Employee.find(:all, :conditions => ['job anyone (?)', ['ANALYST', 'MANAGER']])
+    data_list = employee_data.select {|i| i[EMP_JOB] == 'ANALYST' or i[EMP_JOB] == 'MANAGER' }
+    employees.length.should == data_list.length
+
+    data_list.each do |data|
+      employee = employees.find {|i| i.id == data.id }
+      employee.should_not be_nil
+      validate_employee(data, employee)
+    end
+  end
+
   it "employees has any data ([])" do
     employee_data.each do |data|
       empno, ename, job, mgr, hiredate, sal, comm, deptno = data

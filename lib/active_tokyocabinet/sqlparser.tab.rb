@@ -26,7 +26,7 @@ def scan
   until @ss.eos?
     if (tok = @ss.scan /\s+/)
       # nothing to do
-    elsif (tok = @ss.scan /(?:BW|EW|INCALL|INCANY|INC|IN|EQANY|REGEXP|BT|BETWEEN|FTS|FTSALL|FTSANY|FTSEX)\b/i)
+    elsif (tok = @ss.scan /(?:BW|EW|INCALL|INCANY|INC|IN|ANYONE|REGEXP|BT|BETWEEN|FTS|FTSALL|FTSANY|FTSEX)\b/i)
       yield tok.upcase.to_sym, tok
     elsif (tok = @ss.scan /(?:>=|<=|>|<|=)/)
       yield tok, tok
@@ -75,7 +75,7 @@ def tccond(op, expr)
     :QCSTRAND
   when 'INCANY'
     :QCSTROR
-  when 'IN', 'EQANY'
+  when 'IN', 'ANYONE'
     expr.all? {|i| i.kind_of?(Numeric) } ? :QCNUMOREQ : :QCSTROREQ
   when 'REGEXP'
     :QCSTRRX
@@ -328,7 +328,7 @@ racc_token_table = {
   :INCALL => 32,
   :INCANY => 33,
   :INC => 34,
-  :EQANY => 35,
+  :ANYONE => 35,
   :REGEXP => 36,
   :BT => 37,
   :FTS => 38,
@@ -396,7 +396,7 @@ Racc_token_to_s_table = [
   "INCALL",
   "INCANY",
   "INC",
-  "EQANY",
+  "ANYONE",
   "REGEXP",
   "BT",
   "FTS",
