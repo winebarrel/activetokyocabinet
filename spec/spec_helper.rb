@@ -180,18 +180,45 @@ module ActiveTokyoCabinetSpec
         )
       end
 
-      def tctmgr_create(path)
-        `tctmgr create #{path}`
-      end
-
       def create_tables
-        tctmgr_create "#{$wd}/employees.tct"
-        tctmgr_create "#{$wd}/departments.tct"
+        `tctmgr create #{$wd}/employees.tct`
+        `tctmgr create #{$wd}/departments.tct`
       end
 
       def clean
         FileUtils.rm_f "#{$wd}/employees.tct"
         FileUtils.rm_f "#{$wd}/departments.tct"
+      end
+    end # class << self
+  end # module TokyoCabinetSpec
+
+  module TokyoTyrantSpec
+    extend ActiveTokyoCabinetSpec::Base
+
+    class << self
+      def establish_connection
+        ActiveRecord::Base.establish_connection(
+          :adapter  => 'tokyotyrant',
+          :database => {
+            :employees   => {:host => 'localhost', :port => 1978},
+            :departments => {:host => 'localhost', :port => 1979},
+          }
+        )
+      end
+
+      def create_tables
+        `ttserver -port 1978 -dmn -pid "#{$wd}/employees.pid" "#{$wd}/employees.tct"`
+        `ttserver -port 1979 -dmn -pid "#{$wd}/departments.pid" "#{$wd}/departments.tct"`
+        sleep 3
+      end
+
+      def clean
+        `killall -9 ttserver`
+        sleep 3
+        FileUtils.rm_f "#{$wd}/employees.tct"
+        FileUtils.rm_f "#{$wd}/departments.tct"
+        FileUtils.rm_f "#{$wd}/employees.pid"
+        FileUtils.rm_f "#{$wd}/departments.pid"
       end
     end # class << self
   end # module TokyoCabinetSpec
