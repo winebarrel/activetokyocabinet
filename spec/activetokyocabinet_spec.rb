@@ -76,9 +76,10 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (id=1,2,3)" do
     employees = Employee.find([1, 2, 3])
-    employees.length.should == 3
+    data_list = employee_data[0..2]
+    employees.length.should == data_list.length
 
-    employee_data[0..2].each do |data|
+    data_list.each do |data|
       empno, ename, job, mgr, hiredate, sal, comm, deptno = data
       employee_id = data.id
       employee = employees.find {|i| i.id == employee_id }
@@ -91,9 +92,10 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (order by ename desc limit 3)" do
     employees = Employee.find(:all, :order => 'ename desc', :limit => 3)
-    employees.length.should == 3
+    data_list = employee_data.sort_by {|i| i[EMP_ENAME] || '' }.reverse[0..2]
+    employees.length.should == data_list.length
 
-    employee_data.sort_by {|i| i[EMP_ENAME] || '' }.reverse[0..2].each do |data|
+    data_list.each do |data|
       employee = employees.find {|i| i.id == data.id }
       employee.should_not be_nil
       validate_employee(data, employee)
@@ -102,9 +104,10 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (order by ename desc limit 4 offset 5)" do
     employees = Employee.find(:all, :order => 'ename desc', :limit => 4, :offset => 5)
-    employees.length.should == 4
+    data_list = employee_data.sort_by {|i| i[EMP_ENAME] || '' }.reverse[5..8]
+    employees.length.should == data_list.length
 
-    employee_data.sort_by {|i| i[EMP_ENAME] || '' }.reverse[5..8].each do |data|
+    data_list.each do |data|
       employee = employees.find {|i| i.id == data.id }
       employee.should_not be_nil
       validate_employee(data, employee)
@@ -113,9 +116,10 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (ename bw 'J')" do
     employees = Employee.find(:all, :conditions => ['ename bw ?', 'J'])
-    employees.length.should == 2
+    data_list = employee_data.select {|i| i[EMP_ENAME] =~ /\AJ/ }
+    employees.length.should == data_list.length
 
-    employee_data.select {|i| i[EMP_ENAME] =~ /\AJ/ }.each do |data|
+    data_list.each do |data|
       employee = employees.find {|i| i.id == data.id }
       employee.should_not be_nil
       validate_employee(data, employee)
@@ -124,9 +128,10 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (ename ew 'ES')" do
     employees = Employee.find(:all, :conditions => ['ename ew ?', 'ES'])
-    employees.length.should == 2
+    data_list = employee_data.select {|i| i[EMP_ENAME] =~ /ES\Z/ }
+    employees.length.should == data_list.length
 
-    employee_data.select {|i| i[EMP_ENAME] =~ /ES\Z/ }.each do |data|
+    data_list.each do |data|
       employee = employees.find {|i| i.id == data.id }
       employee.should_not be_nil
       validate_employee(data, employee)
@@ -135,9 +140,10 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (ename inc 'LA')" do
     employees = Employee.find(:all, :conditions => ['ename inc ?', 'LA'])
-    employees.length.should == 2
+    data_list = employee_data.select {|i| i[EMP_ENAME] =~ /LA/ }
+    employees.length.should == data_list.length
 
-    employee_data.select {|i| i[EMP_ENAME] =~ /LA/ }.each do |data|
+    data_list.each do |data|
       employee = employees.find {|i| i.id == data.id }
       employee.should_not be_nil
       validate_employee(data, employee)
@@ -146,9 +152,10 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (job incall ('ANALYST', 'MANAGER'))" do
     employees = Employee.find(:all, :conditions => ['job incall (?)', ['ANALYST', 'MANAGER']])
-    employees.length.should == 1
+    data_list = employee_data.select {|i| i[EMP_JOB] =~ /ANALYST/ and i[EMP_JOB] =~ /MANAGER/ }
+    employees.length.should == data_list.length
 
-    employee_data.select {|i| i[EMP_JOB] =~ /ANALYST/ and i[EMP_JOB] =~ /MANAGER/ }.each do |data|
+    data_list.each do |data|
       employee = employees.find {|i| i.id == data.id }
       employee.should_not be_nil
       validate_employee(data, employee)
