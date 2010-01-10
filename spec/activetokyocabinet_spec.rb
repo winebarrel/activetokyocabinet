@@ -144,6 +144,17 @@ describe 'tokyocabinet:' do
     end
   end
 
+  it "employees has any data (job incall ('ANALYST', 'MANAGER'))" do
+    employees = Employee.find(:all, :conditions => ['job incall (?)', ['ANALYST', 'MANAGER']])
+    employees.length.should == 1
+
+    employee_data.select {|i| i[EMP_JOB] =~ /ANALYST/ and i[EMP_JOB] =~ /MANAGER/ }.each do |data|
+      employee = employees.find {|i| i.id == data.id }
+      employee.should_not be_nil
+      validate_employee(data, employee)
+    end
+  end
+
   it "employees has any data ([])" do
     employee_data.each do |data|
       empno, ename, job, mgr, hiredate, sal, comm, deptno = data
