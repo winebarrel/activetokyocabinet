@@ -234,6 +234,18 @@ describe 'tokyocabinet:' do
     end
   end
 
+  it "employees has any data (ename ftsand 'HATSUNE MIKU')" do
+    # XXX:
+    employees = Employee.find(:all, :conditions => ['ename ftsand ?', 'HATSUNE MIKU'])
+    employees = Employee.find(:all, :conditions => ['ename ftsand (?)', ['HATSUNE', 'MIKU']])
+  end
+
+  it "employees has any data (ename ftsor 'HATSUNE MIKU')" do
+    # XXX:
+    employees = Employee.find(:all, :conditions => ['hiredate ftsor ?', '1983 DEC'])
+    employees = Employee.find(:all, :conditions => ['hiredate ftsor (?)', ['1983', 'DEC']])
+  end
+
   it "employees has any data ([])" do
     employee_data.each do |data|
       empno, ename, job, mgr, hiredate, sal, comm, deptno = data
