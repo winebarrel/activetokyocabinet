@@ -58,7 +58,7 @@ module ActiveRecord
 
           unless tdb.open(host, port, timeout)
             ecode = tdb.ecode
-            raise "%s: %s" % [tdb.errmsg(ecode), path]
+            raise "%s: %s:%s" % [tdb.errmsg(ecode), host, port]
           end
         end
 
