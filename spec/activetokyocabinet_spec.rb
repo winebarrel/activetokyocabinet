@@ -287,8 +287,8 @@ describe 'tokyocabinet:' do
     end
   end
 
-  it "departments has any data (deptno BETWEEN (?) [20, 30])" do
-    departments = Department.find(:all, :conditions => ['deptno BETWEEN (?)', [20, 30]])
+  it "departments has any data (deptno BETWEEN 20 and 30)" do
+    departments = Department.find(:all, :conditions => ['deptno BETWEEN ? and ?', 20, 30])
     departments.length.should == 2
 
     department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }.each do |data|
@@ -298,19 +298,19 @@ describe 'tokyocabinet:' do
     end
   end
 
-  it "departments has any data (deptno BETWEEN (?, ?) [20, 30])" do
-    departments = Department.find(:all, :conditions => ['deptno BETWEEN (?, ?)', 20, 30])
-    departments.length.should == 2
-
-    department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }.each do |data|
-      department = departments.find {|i| i.id == data.id }
-      department.should_not be_nil
-      validate_department(data, department)
-    end
-  end
-
-  it "departments has any data (deptno BT (20, 30))" do
+  it "departments has any data (deptno BT (?) [20, 30])" do
     departments = Department.find(:all, :conditions => ['deptno BT (?)', [20, 30]])
+    departments.length.should == 2
+
+    department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }.each do |data|
+      department = departments.find {|i| i.id == data.id }
+      department.should_not be_nil
+      validate_department(data, department)
+    end
+  end
+
+  it "departments has any data (deptno BT (?, ?) [20, 30])" do
+    departments = Department.find(:all, :conditions => ['deptno BT (?, ?)', 20, 30])
     departments.length.should == 2
 
     department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }.each do |data|

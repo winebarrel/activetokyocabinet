@@ -89,6 +89,13 @@ rule
                           {
                             {:name => val[0], :op => tccond(val[1], val[3]), :expr => val[3]}
                           }
+                        | between_predicate
+
+  between_predicate     : id BETWEEN value AND value
+                          {
+                            {:name => val[0], :op => tccond(val[1], nil), :expr => [val[2], val[4]]}
+                          }
+
   order_by_clause       :
                           {
                             nil
@@ -176,7 +183,6 @@ rule
                         | EQANY
                         | REGEXP
                         | BT
-                        | BETWEEN
                         | FTS
                         | FTSALL
                         | FTSANY
