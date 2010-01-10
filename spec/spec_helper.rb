@@ -100,8 +100,8 @@ EOS
       [7900, 'JAMES' , 'CLERK'          , 7698, '3-DEC-1981' ,  950.0,    nil,  30],
       [7902, 'FORD'  , 'ANALYST'        , 7566, '3-DEC-1981' , 3000.0,    nil,  20],
       [7934, 'MILLER', 'CLERK'          , 7782, '23-JAN-1982', 1300.0,    nil,  10],
-      [7935, 'MIKU'  , 'ANALYST,MANAGER', 7782, '23-JAN-1982', 1300.0,    nil,  10],
-      [7936, 'RIN'   , 'ANALYST,CLERK'  , 7782, '23-JAN-1982', 1300.0,    nil,  10],
+      [7935, 'MIKU'  , 'ANALYST,MANAGER', 7784, '23-JAN-1982', 1350.0,    nil,  30],
+      [7936, 'RIN'   , 'ANALYST,CLERK'  , 7786, '23-JAN-1983', 1400.0,    nil,  10],
       [ nil, nil     , nil        ,  nil,  nil         ,    nil,    nil, nil],
     ]
 
