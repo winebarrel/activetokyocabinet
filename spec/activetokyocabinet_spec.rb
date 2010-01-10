@@ -52,8 +52,8 @@ describe 'tokyocabinet:' do
   end
 
   it "employees has any data" do
-    employee_data.each_with_index do |data, i|
-      employee_id = i + 1
+    employee_data.each do |data|
+      employee_id = data.id
       employee = Employee.find(employee_id)
 
       employee.should_not be_nil
@@ -78,9 +78,9 @@ describe 'tokyocabinet:' do
     employees = Employee.find([1, 2, 3])
     employees.length.should == 3
 
-    employee_data[0..2].each_with_index do |data, i|
+    employee_data[0..2].each do |data|
       empno, ename, job, mgr, hiredate, sal, comm, deptno = data
-      employee_id = i + 1
+      employee_id = data.id
       employee = employees.find {|i| i.id == employee_id }
 
       employee.should_not be_nil
@@ -112,9 +112,9 @@ describe 'tokyocabinet:' do
   end
 
   it "employees has any data ([])" do
-    employee_data.each_with_index do |data, i|
+    employee_data.each do |data|
       empno, ename, job, mgr, hiredate, sal, comm, deptno = data
-      employee_id = i + 1
+      employee_id = data.id
       employee = Employee.find(employee_id)
 
       employee.should_not be_nil
@@ -171,8 +171,8 @@ describe 'tokyocabinet:' do
   end
 
   it "departments has any data" do
-    department_data.each_with_index do |data, i|
-      department_id = i + 1
+    department_data.each do |data|
+      department_id = data.id
       department = Department.find(department_id)
 
       department.should_not be_nil
@@ -182,9 +182,9 @@ describe 'tokyocabinet:' do
   end
 
   it "departments has any data ([])" do
-    department_data.each_with_index do |data, i|
+    department_data.each do |data|
       deptno, dname, loc = data
-      department_id = i + 1
+      department_id = data.id
       department = Department.find(department_id)
 
       department.should_not be_nil
@@ -222,9 +222,9 @@ describe 'tokyocabinet:' do
     departments = Department.find([1, 2, 3])
     departments.length.should == 3
 
-    department_data[0..2].each_with_index do |data, i|
+    department_data[0..2].each do |data|
       deptno, dname, loc = data
-      department_id = i + 1
+      department_id = data.id
       department = departments.find {|i| i.id == department_id }
 
       department.should_not be_nil
