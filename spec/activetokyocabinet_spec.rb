@@ -64,6 +64,7 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (job = 'SALESMAN')" do
     employees = Employee.find(:all, :conditions => ['job = ?', 'SALESMAN'])
+    employees.should_not be_empty
 
     employees.each do |employee|
       data = employee_data[employee.id - 1]
@@ -76,6 +77,7 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (id=1,2,3)" do
     employees = Employee.find([1, 2, 3])
+    employees.should_not be_empty
     data_list = employee_data[0..2]
     employees.length.should == data_list.length
 
@@ -104,6 +106,7 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (order by ename desc limit 4 offset 5)" do
     employees = Employee.find(:all, :order => 'ename desc', :limit => 4, :offset => 5)
+    employees.should_not be_empty
     data_list = employee_data.sort_by {|i| i[EMP_ENAME] || '' }.reverse[5..8]
     employees.length.should == data_list.length
 
@@ -116,6 +119,7 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (ename bw 'J')" do
     employees = Employee.find(:all, :conditions => ['ename bw ?', 'J'])
+    employees.should_not be_empty
     data_list = employee_data.select {|i| i[EMP_ENAME] =~ /\AJ/ }
     employees.length.should == data_list.length
 
@@ -128,6 +132,7 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (ename ew 'ES')" do
     employees = Employee.find(:all, :conditions => ['ename ew ?', 'ES'])
+    employees.should_not be_empty
     data_list = employee_data.select {|i| i[EMP_ENAME] =~ /ES\Z/ }
     employees.length.should == data_list.length
 
@@ -140,6 +145,7 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (ename inc 'LA')" do
     employees = Employee.find(:all, :conditions => ['ename inc ?', 'LA'])
+    employees.should_not be_empty
     data_list = employee_data.select {|i| i[EMP_ENAME] =~ /LA/ }
     employees.length.should == data_list.length
 
@@ -152,6 +158,7 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (job incall ('ANALYST', 'MANAGER'))" do
     employees = Employee.find(:all, :conditions => ['job incall (?)', ['ANALYST', 'MANAGER']])
+    employees.should_not be_empty
     data_list = employee_data.select {|i| i[EMP_JOB] =~ /ANALYST/ and i[EMP_JOB] =~ /MANAGER/ }
     employees.length.should == data_list.length
 
@@ -164,6 +171,7 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (job incany ('ANALYST', 'MANAGER'))" do
     employees = Employee.find(:all, :conditions => ['job incany (?)', ['ANALYST', 'MANAGER']])
+    employees.should_not be_empty
     data_list = employee_data.select {|i| i[EMP_JOB] =~ /ANALYST/ or i[EMP_JOB] =~ /MANAGER/ }
     employees.length.should == data_list.length
 
@@ -176,6 +184,7 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (job in ('ANALYST', 'MANAGER'))" do
     employees = Employee.find(:all, :conditions => ['job in (?)', ['ANALYST', 'MANAGER']])
+    employees.should_not be_empty
     data_list = employee_data.select {|i| i[EMP_JOB] == 'ANALYST' or i[EMP_JOB] == 'MANAGER' }
     employees.length.should == data_list.length
 
@@ -188,6 +197,7 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (empno in (7934, 7935, 7936))" do
     employees = Employee.find(:all, :conditions => ['empno in (?)', [7934, 7935, 7936]])
+    employees.should_not be_empty
     data_list = employee_data.select {|i| [7934, 7935, 7936].include?(i[EMP_EMPNO]) }
     employees.length.should == data_list.length
 
@@ -200,6 +210,7 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (job anyone ('ANALYST', 'MANAGER'))" do
     employees = Employee.find(:all, :conditions => ['job anyone (?)', ['ANALYST', 'MANAGER']])
+    employees.should_not be_empty
     data_list = employee_data.select {|i| i[EMP_JOB] == 'ANALYST' or i[EMP_JOB] == 'MANAGER' }
     employees.length.should == data_list.length
 
@@ -212,6 +223,7 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (ename regexp '^J[AO].+$')" do
     employees = Employee.find(:all, :conditions => ['ename regexp ?', '^J[AO].+$'])
+    employees.should_not be_empty
     data_list = employee_data.select {|i| i[EMP_ENAME] =~ /\AJ[AO].+\Z/ }
     employees.length.should == data_list.length
 
@@ -224,6 +236,7 @@ describe 'tokyocabinet:' do
 
   it "employees has any data (ename fts 'MI')" do
     employees = Employee.find(:all, :conditions => ['ename fts ?', 'MI'])
+    employees.should_not be_empty
     data_list = employee_data.select {|i| i[EMP_ENAME] =~ /MI/ }
     employees.length.should == data_list.length
 
@@ -240,10 +253,36 @@ describe 'tokyocabinet:' do
     employees = Employee.find(:all, :conditions => ['ename ftsand (?)', ['HATSUNE', 'MIKU']])
   end
 
-  it "employees has any data (ename ftsor 'HATSUNE MIKU')" do
+  it "employees has any data (hiredate ftsor '1983 DEC')" do
     # XXX:
     employees = Employee.find(:all, :conditions => ['hiredate ftsor ?', '1983 DEC'])
     employees = Employee.find(:all, :conditions => ['hiredate ftsor (?)', ['1983', 'DEC']])
+  end
+
+  it "employees has any data (ename ftsex 'MIKU || RIN')" do
+    employees = Employee.find(:all, :conditions => ['ename ftsex ?', 'MIKU || RIN'])
+    employees.should_not be_empty
+    data_list = employee_data.select {|i| i[EMP_ENAME] =~ /MIKU/ or i[EMP_ENAME] =~ /RIN/ }
+    employees.length.should == data_list.length
+
+    data_list.each do |data|
+      employee = employees.find {|i| i.id == data.id }
+      employee.should_not be_nil
+      validate_employee(data, employee)
+    end
+  end
+
+  it "employees has any data (ename ftsex 'HATSUNE && MIKU')" do
+    employees = Employee.find(:all, :conditions => ['ename ftsex ?', 'HATSUNE && MIKU'])
+    employees.should_not be_empty
+    data_list = employee_data.select {|i| i[EMP_ENAME] =~ /HATSUNE/ and i[EMP_ENAME] =~ /MIKU/ }
+    employees.length.should == data_list.length
+
+    data_list.each do |data|
+      employee = employees.find {|i| i.id == data.id }
+      employee.should_not be_nil
+      validate_employee(data, employee)
+    end
   end
 
   it "employees has any data ([])" do
@@ -332,6 +371,7 @@ describe 'tokyocabinet:' do
 
   it "department has any data (loc in ('NEW YORK', 'CHICAGO'))" do
     departments = Department.find(:all, :conditions => ['loc in (?)', ['NEW YORK', 'CHICAGO']])
+    departments.should_not be_empty
 
     departments.each do |department|
       data = department_data[department.id - 1]
@@ -343,6 +383,7 @@ describe 'tokyocabinet:' do
 
   it "department has any data ({:loc => ['NEW YORK', 'CHICAGO']})" do
     departments = Department.find(:all, :conditions => {:loc =>  ['NEW YORK', 'CHICAGO']})
+    departments.should_not be_empty
 
     departments.each do |department|
       data = department_data[department.id - 1]
@@ -355,6 +396,7 @@ describe 'tokyocabinet:' do
 
   it "departments has any data (id=1,2,3)" do
     departments = Department.find([1, 2, 3])
+    departments.should_not be_empty
     data_list = department_data[0..2]
     departments.length.should == data_list.length
 
@@ -370,6 +412,7 @@ describe 'tokyocabinet:' do
 
   it "departments has any data (order by deptno numdesc limit 65535 offset 1)" do
     departments = Department.find(:all, :order => 'deptno numdesc', :limit => 65535, :offset => 1)
+    departments.should_not be_empty
     data_list = department_data.sort_by {|i| i[DEPT_DEPTNO] || 0 }.reverse[1..-1]
     departments.length.should == data_list.length
 
@@ -382,6 +425,7 @@ describe 'tokyocabinet:' do
 
   it "departments has any data (order by deptno numasc)" do
     departments = Department.find(:all, :order => 'deptno numasc')
+    departments.should_not be_empty
     data_list = department_data.sort_by {|i| i[DEPT_DEPTNO] || 0 }
     departments.length.should == data_list.length
 
@@ -394,6 +438,7 @@ describe 'tokyocabinet:' do
 
   it "departments has any data (deptno between 20 and 30)" do
     departments = Department.find(:all, :conditions => ['deptno between ? and ?', 20, 30])
+    departments.should_not be_empty
     data_list = department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }
     departments.length.should == data_list.length
 
@@ -406,6 +451,7 @@ describe 'tokyocabinet:' do
 
   it "departments has any data (deptno bt (?) [20, 30])" do
     departments = Department.find(:all, :conditions => ['deptno bt (?)', [20, 30]])
+    departments.should_not be_empty
     data_list = department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }
     departments.length.should == data_list.length
 
@@ -418,6 +464,7 @@ describe 'tokyocabinet:' do
 
   it "departments has any data (deptno bt (?, ?) [20, 30])" do
     departments = Department.find(:all, :conditions => ['deptno bt (?, ?)', 20, 30])
+    departments.should_not be_empty
     data_list = department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }
     departments.length.should == data_list.length
 
