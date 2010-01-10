@@ -184,8 +184,8 @@ rule
                         | REGEXP
                         | BT
                         | FTS
-                        | FTSALL
-                        | FTSANY
+                        | FTSAND
+                        | FTSOR
                         | FTSEX
                         | '>='
                         | '<='
@@ -214,7 +214,7 @@ def scan
   until @ss.eos?
     if (tok = @ss.scan /\s+/)
       # nothing to do
-    elsif (tok = @ss.scan /(?:BW|EW|INCALL|INCANY|INC|IN|ANYONE|REGEXP|BT|BETWEEN|FTS|FTSALL|FTSANY|FTSEX)\b/i)
+    elsif (tok = @ss.scan /(?:BW|EW|INCALL|INCANY|INC|IN|ANYONE|REGEXP|BT|BETWEEN|FTS|FTSAND|FTSOR|FTSEX)\b/i)
       yield tok.upcase.to_sym, tok
     elsif (tok = @ss.scan /(?:>=|<=|>|<|=)/)
       yield tok, tok
@@ -279,9 +279,9 @@ def tccond(op, expr)
     :QCNUMBT
   when 'FTS'
     :QCFTSPH
-  when 'FTSALL'
+  when 'FTSAND'
     :QCFTSAND
-  when 'FTSANY'
+  when 'FTSOR'
     :QCFTSOR
   when 'FTSEX'
     :QCFTSEX

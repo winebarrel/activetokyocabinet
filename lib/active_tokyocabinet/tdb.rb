@@ -13,6 +13,10 @@ module ActiveTokyoCabinet
             @columns << ActiveRecord::ConnectionAdapters::Column.new(name.to_s, nil)
             class_eval "def \#{name}; v = self[:\#{name}]; (v.nil? || v.empty?) ? nil : v.#{conv}; end"
           end
+
+          def setindex(name, type)
+            self.connection.setindex(self.table_name, name, type)
+          end
         }
       end
     end
