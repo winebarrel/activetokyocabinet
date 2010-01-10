@@ -207,6 +207,10 @@ module ActiveTokyoCabinetSpec
       end
 
       def create_tables
+        Dir.glob("#{$wd}/*.{tct,pid}*").each do |f|
+          FileUtils.rm_f f
+        end
+
         `ttserver -port 1978 -dmn -pid "#{$wd}/employees.pid" "#{$wd}/employees.tct"`
         `ttserver -port 1979 -dmn -pid "#{$wd}/departments.pid" "#{$wd}/departments.tct"`
         sleep 3
@@ -215,10 +219,10 @@ module ActiveTokyoCabinetSpec
       def clean
         `killall -9 ttserver`
         sleep 3
-        FileUtils.rm_f "#{$wd}/employees.tct"
-        FileUtils.rm_f "#{$wd}/departments.tct"
-        FileUtils.rm_f "#{$wd}/employees.pid"
-        FileUtils.rm_f "#{$wd}/departments.pid"
+
+        Dir.glob("#{$wd}/*.{tct,pid}*").each do |f|
+          FileUtils.rm_f f
+        end
       end
     end # class << self
   end # module TokyoCabinetSpec

@@ -66,6 +66,42 @@ module ActiveRecord
         @connection[table_name] = tdb
       end
       private :tdbopen
+
+      def setindex(table_name, name, type)
+        type = {
+          :lexical => TokyoTyrant::RDBTBL::ITLEXICAL,
+          :decimal => TokyoTyrant::RDBTBL::ITDECIMAL,
+          :token   => TokyoTyrant::RDBTBL::ITTOKEN,
+          :qgram   => TokyoTyrant::RDBTBL::ITQGRAM,
+          :opt     => TokyoTyrant::RDBTBL::ITOPT,
+          :void    => TokyoTyrant::RDBTBL::ITVOID,
+          :keep    => TokyoTyrant::RDBTBL::ITKEEP,
+        }.fetch(type)
+
+        name = name.to_s
+
+        unless (tdb = @connection[table_name])
+          host, port, timeout = @database.fetch(table_name).values_at(:host, :port, :timeout)
+          tdb = TokyoTyrant::RDBTBL::new
+
+          unless tdb.open(host, port, timeout)
+            ecode = tdb.ecode
+            raise "%s: %s:%s" % [tdb.errmsg(ecode), host, port]
+          end
+        end
+
+        begin
+          unless tdb.setindex(name, type)
+            ecode = tdb.ecode
+            raise "%s: %s:%s" % [tdb.errmsg(ecode), host, port]
+          end
+        ensure
+          unless tdb.close
+            ecode = tdb.ecode
+            raise tdb.errmsg(ecode)
+          end
+        end
+      end
     end
   end
 end
