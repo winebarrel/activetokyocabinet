@@ -111,8 +111,8 @@ describe 'tokyocabinet:' do
     end
   end
 
-  it "employees has any data (ename BW 'J')" do
-    employees = Employee.find(:all, :conditions => ['ename BW ?', 'J'])
+  it "employees has any data (ename bw 'J')" do
+    employees = Employee.find(:all, :conditions => ['ename bw ?', 'J'])
     employees.length.should == 2
 
     employee_data.select {|i| i[EMP_ENAME] =~ /\AJ/ }.each do |data|
@@ -122,8 +122,8 @@ describe 'tokyocabinet:' do
     end
   end
 
-  it "employees has any data (ename EW 'ES')" do
-    employees = Employee.find(:all, :conditions => ['ename EW ?', 'ES'])
+  it "employees has any data (ename ew 'ES')" do
+    employees = Employee.find(:all, :conditions => ['ename ew ?', 'ES'])
     employees.length.should == 2
 
     employee_data.select {|i| i[EMP_ENAME] =~ /ES\Z/ }.each do |data|
@@ -133,8 +133,8 @@ describe 'tokyocabinet:' do
     end
   end
 
-  it "employees has any data (ename INC 'LA')" do
-    employees = Employee.find(:all, :conditions => ['ename INC ?', 'LA'])
+  it "employees has any data (ename inc 'LA')" do
+    employees = Employee.find(:all, :conditions => ['ename inc ?', 'LA'])
     employees.length.should == 2
 
     employee_data.select {|i| i[EMP_ENAME] =~ /LA/ }.each do |data|
@@ -287,8 +287,8 @@ describe 'tokyocabinet:' do
     end
   end
 
-  it "departments has any data (deptno BETWEEN 20 and 30)" do
-    departments = Department.find(:all, :conditions => ['deptno BETWEEN ? and ?', 20, 30])
+  it "departments has any data (deptno between 20 and 30)" do
+    departments = Department.find(:all, :conditions => ['deptno between ? and ?', 20, 30])
     departments.length.should == 2
 
     department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }.each do |data|
@@ -298,8 +298,8 @@ describe 'tokyocabinet:' do
     end
   end
 
-  it "departments has any data (deptno BT (?) [20, 30])" do
-    departments = Department.find(:all, :conditions => ['deptno BT (?)', [20, 30]])
+  it "departments has any data (deptno bt (?) [20, 30])" do
+    departments = Department.find(:all, :conditions => ['deptno bt (?)', [20, 30]])
     departments.length.should == 2
 
     department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }.each do |data|
@@ -309,8 +309,8 @@ describe 'tokyocabinet:' do
     end
   end
 
-  it "departments has any data (deptno BT (?, ?) [20, 30])" do
-    departments = Department.find(:all, :conditions => ['deptno BT (?, ?)', 20, 30])
+  it "departments has any data (deptno bt (?, ?) [20, 30])" do
+    departments = Department.find(:all, :conditions => ['deptno bt (?, ?)', 20, 30])
     departments.length.should == 2
 
     department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }.each do |data|
