@@ -111,6 +111,17 @@ describe 'tokyocabinet:' do
     end
   end
 
+  it "employees has any data (ename BW 'J')" do
+    employees = Employee.find(:all, :conditions => ['ename BW ?', 'J'])
+    employees.length.should == 2
+
+    employee_data.select {|i| i[EMP_ENAME] =~ /\AJ/ }.each do |data|
+      employee = employees.find {|i| i.id == data.id }
+      employee.should_not be_nil
+      validate_employee(data, employee)
+    end
+  end
+
   it "employees has any data ([])" do
     employee_data.each do |data|
       empno, ename, job, mgr, hiredate, sal, comm, deptno = data
@@ -248,6 +259,39 @@ describe 'tokyocabinet:' do
     departments.length.should == department_data.length
 
     department_data.sort_by {|i| i[DEPT_DEPTNO] || 0 }.each do |data|
+      department = departments.find {|i| i.id == data.id }
+      department.should_not be_nil
+      validate_department(data, department)
+    end
+  end
+
+  it "departments has any data (deptno BETWEEN (?) [20, 30])" do
+    departments = Department.find(:all, :conditions => ['deptno BETWEEN (?)', [20, 30]])
+    departments.length.should == 2
+
+    department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }.each do |data|
+      department = departments.find {|i| i.id == data.id }
+      department.should_not be_nil
+      validate_department(data, department)
+    end
+  end
+
+  it "departments has any data (deptno BETWEEN (?, ?) [20, 30])" do
+    departments = Department.find(:all, :conditions => ['deptno BETWEEN (?, ?)', 20, 30])
+    departments.length.should == 2
+
+    department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }.each do |data|
+      department = departments.find {|i| i.id == data.id }
+      department.should_not be_nil
+      validate_department(data, department)
+    end
+  end
+
+  it "departments has any data (deptno BT (20, 30))" do
+    departments = Department.find(:all, :conditions => ['deptno BT (?)', [20, 30]])
+    departments.length.should == 2
+
+    department_data.select {|i| i[DEPT_DEPTNO] and 20 <= i[DEPT_DEPTNO] and i[DEPT_DEPTNO] <= 30 }.each do |data|
       department = departments.find {|i| i.id == data.id }
       department.should_not be_nil
       validate_department(data, department)

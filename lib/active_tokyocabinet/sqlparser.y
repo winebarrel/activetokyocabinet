@@ -175,6 +175,7 @@ rule
                         | IN
                         | EQANY
                         | REGEXP
+                        | BT
                         | BETWEEN
                         | FTS
                         | FTSALL
@@ -207,7 +208,7 @@ def scan
   until @ss.eos?
     if (tok = @ss.scan /\s+/)
       # nothing to do
-    elsif (tok = @ss.scan /(?:BW|EW|INCALL|INCANY|INC|IN|EQANY|REGEXP|BETWEEN|FTS|FTSALL|FTSANY|FTSEX)\b/i)
+    elsif (tok = @ss.scan /(?:BW|EW|INCALL|INCANY|INC|IN|EQANY|REGEXP|BT|BETWEEN|FTS|FTSALL|FTSANY|FTSEX)\b/i)
       yield tok.upcase.to_sym, tok
     elsif (tok = @ss.scan /(?:>=|<=|>|<|=)/)
       yield tok, tok
@@ -268,7 +269,7 @@ def tccond(op, expr)
     :QCNUMLT
   when '<='
     :QCNUMLE
-  when 'BETWEEN'
+  when 'BT', 'BETWEEN'
     :QCNUMBT
   when 'FTS'
     :QCFTSPH
