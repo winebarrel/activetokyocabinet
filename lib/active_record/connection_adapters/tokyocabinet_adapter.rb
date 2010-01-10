@@ -60,6 +60,38 @@ module ActiveRecord
         File.join(@config[:database], table_name + ".tct")
       end
       private :tdbpath
+
+      def setindex(table_name, name, type)
+        type = {
+          :lexical => TokyoCabinet::TDB::ITLEXICAL,
+          :decimal => TokyoCabinet::TDB::ITDECIMAL,
+          :token   => TokyoCabinet::TDB::ITTOKEN,
+          :qgram   => TokyoCabinet::TDB::ITQGRAM,
+          :void    => TokyoCabinet::TDB::ITVOID,
+          :keep    => TokyoCabinet::TDB::ITKEEP,
+        }.fetch(type)
+
+        name = name.to_s
+        path = tdbpath(table_name)
+        tdb = TokyoCabinet::TDB::new
+
+        unless tdb.open(path, TokyoCabinet::TDB::OWRITER | TokyoCabinet::TDB::OCREAT)
+          ecode = tdb.ecode
+          raise "%s: %s" % [tdb.errmsg(ecode), path]
+        end
+
+        begin
+          unless tdb.setindex(name, type)
+            ecode = tdb.ecode
+            raise "%s: %s" % [tdb.errmsg(ecode), path]
+          end
+        ensure
+          unless tdb.close
+            ecode = tdb.ecode
+            raise tdb.errmsg(ecode)
+          end
+        end
+      end
     end
   end
 end
