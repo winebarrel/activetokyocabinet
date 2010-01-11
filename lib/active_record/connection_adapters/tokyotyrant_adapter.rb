@@ -67,6 +67,11 @@ module ActiveRecord
       end
       private :tdbopen
 
+      def count_rkey(tdb, parsed_sql)
+        query(tdb, parsed_sql).searchcount
+      end
+      private :count_rkey
+
       def setindex(table_name, name, type)
         type = {
           :lexical => TokyoTyrant::RDBTBL::ITLEXICAL,

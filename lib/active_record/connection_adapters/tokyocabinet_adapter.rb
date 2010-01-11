@@ -61,6 +61,11 @@ module ActiveRecord
       end
       private :tdbpath
 
+      def count_rkey(tdb, parsed_sql)
+        rkeys(tdb, parsed_sql).length
+      end
+      private :count_rkey
+
       def setindex(table_name, name, type)
         type = {
           :lexical => TokyoCabinet::TDB::ITLEXICAL,

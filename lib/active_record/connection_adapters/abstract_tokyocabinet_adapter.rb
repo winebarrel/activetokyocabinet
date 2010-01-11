@@ -23,24 +23,24 @@ module ActiveRecord
           tdbopen(parsed_sql) do |tdb|
             select_list = parsed_sql[:select_list]
 
-            rkeys(tdb, parsed_sql).each do |rkey|
-              rcols = tdb.get(rkey)
-              next if rcols.nil?
-
-              unless select_list.nil? or select_list.empty?
-                rcols = select_list.each do |k|
-                  k = k.split('.').last
-                  r[k] = rcols[k]
+            if (count = parsed_sql[:count])
+              rows = [{count => count_rkey(tdb, parsed_sql)}]
+            else
+              rkeys(tdb, parsed_sql).each do |rkey|
+                rcols = tdb.get(rkey)
+                next if rcols.nil?
+  
+                unless select_list.nil? or select_list.empty?
+                  rcols = select_list.each do |k|
+                    k = k.split('.').last
+                    r[k] = rcols[k]
+                  end
                 end
+  
+                rcols['id'] = rkey.to_i
+                rows << rcols
               end
-
-              rcols['id'] = rkey.to_i
-              rows << rcols
             end
-          end
-
-          if (count = parsed_sql[:count])
-            rows = [{count => rows.length}]
           end
         end
 
@@ -125,12 +125,18 @@ module ActiveRecord
       end
 
       def rkeys(tdb, parsed_sql)
-        condition, order, limit, offset = parsed_sql.values_at(:condition, :order, :limit, :offset)
-        condition ||= []
+        condition = parsed_sql[:condition] || []
 
         unless condition.kind_of?(Array) and condition.all? {|i| i.kind_of?(Hash) }
-          return [parsed_sql[:condition]].flatten
+          return [condition].flatten
         end
+
+        query(tdb, parsed_sql).search
+      end
+
+      def query(tdb, parsed_sql)
+        condition, order, limit, offset = parsed_sql.values_at(:condition, :order, :limit, :offset)
+        condition ||= []
 
         qry = @query_klass::new(tdb)
 
@@ -152,9 +158,9 @@ module ActiveRecord
           qry.setlimit(limit || 0, offset || 0)
         end
 
-        return qry.search
+        return qry
       end
-      private :rkeys
+      private :query
     end
   end
 end
