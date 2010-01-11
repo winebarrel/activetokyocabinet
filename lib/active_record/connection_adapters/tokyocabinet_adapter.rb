@@ -62,7 +62,11 @@ module ActiveRecord
       private :tdbpath
 
       def count_rkey(tdb, parsed_sql)
-        rkeys(tdb, parsed_sql).length
+        if (parsed_sql[:condition] || []).empty?
+          tdb.rnum
+        else
+          rkeys(tdb, parsed_sql).length
+        end
       end
       private :count_rkey
 

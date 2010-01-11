@@ -68,7 +68,11 @@ module ActiveRecord
       private :tdbopen
 
       def count_rkey(tdb, parsed_sql)
-        query(tdb, parsed_sql).searchcount
+        if (parsed_sql[:condition] || []).empty?
+          tdb.rnum
+        else
+          query(tdb, parsed_sql).searchcount
+        end
       end
       private :count_rkey
 
