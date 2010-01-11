@@ -15,31 +15,16 @@ module ActiveRecord
       end
 
       def select(sql, name = nil)
-        rows = []
+        rows = nil
 
         log(sql, name) do
           parsed_sql = ActiveTokyoCabinet::SQLParser.new(sql).parse
 
           tdbopen(parsed_sql) do |tdb|
-            select_list = parsed_sql[:select_list]
-
             if (count = parsed_sql[:count])
-              rows = [{count => count_rkey(tdb, parsed_sql)}]
+              rows = [{count => rnum(tdb, parsed_sql)}]
             else
-              rkeys(tdb, parsed_sql).each do |rkey|
-                rcols = tdb.get(rkey)
-                next if rcols.nil?
-  
-                unless select_list.nil? or select_list.empty?
-                  rcols = select_list.each do |k|
-                    k = k.split('.').last
-                    r[k] = rcols[k]
-                  end
-                end
-  
-                rcols['id'] = rkey.to_i
-                rows << rcols
-              end
+              rows = search(tdb, parsed_sql)
             end
           end
         end
@@ -104,35 +89,59 @@ module ActiveRecord
       end
 
       def delete_sql(sql, name = nil)
-        rownum = 0
-
         log(sql, name) do
           parsed_sql = ActiveTokyoCabinet::SQLParser.new(sql).parse
 
           tdbopen(parsed_sql) do |tdb|
-            rkeys(tdb, parsed_sql).each do |rkey|
-              rownum += 1
-
-              unless tdb.out(rkey)
-                ecode = tdb.ecode
-                raise '%s: %s' % [tdb.errmsg(ecode), sql]
-              end
+            unless query(tdb, parsed_sql).searchout
+              ecode = tdb.ecode
+              raise '%s: %s' % [tdb.errmsg(ecode), sql]
             end
           end
         end
 
-        return rownum
+        # XXX:
+        return 1
       end
+
+      def search(tdb, parsed_sql)
+        rows = []
+        select_list = parsed_sql[:select_list]
+
+        rkeys(tdb, parsed_sql).each do |rkey|
+          rcols = tdb.get(rkey)
+          next if rcols.nil?
+  
+          unless select_list.nil? or select_list.empty?
+            rcols = select_list.each do |k|
+              k = k.split('.').last
+              r[k] = rcols[k]
+            end
+          end
+
+          rcols['id'] = rkey.to_i
+          rows << rcols
+        end
+
+        return rows
+      end
+      private :search
+
+      def cond?(condition)
+        condition.kind_of?(Array) and condition.all? {|i| i.kind_of?(Hash) }
+      end
+      private :cond?
 
       def rkeys(tdb, parsed_sql)
         condition = parsed_sql[:condition] || []
 
-        unless condition.kind_of?(Array) and condition.all? {|i| i.kind_of?(Hash) }
+        unless cond?(condition)
           return [condition].flatten
         end
 
         query(tdb, parsed_sql).search
       end
+      private :rkeys
 
       def query(tdb, parsed_sql)
         condition, order, limit, offset = parsed_sql.values_at(:condition, :order, :limit, :offset)

@@ -67,14 +67,36 @@ module ActiveRecord
       end
       private :tdbopen
 
-      def count_rkey(tdb, parsed_sql)
+      def search(tdb, parsed_sql)
+        condition = parsed_sql[:condition] || []
+
+        unless cond?(condition)
+          super(tdb, parsed_sql)
+        else
+          select_list = parsed_sql[:select_list]
+
+          if select_list.nil? or select_list.empty?
+            names = nil
+          else
+            names = select_list.map {|i| i.split('.').last }
+          end
+
+          rows = query(tdb, parsed_sql).searchget
+          rows.each {|i| i['id'] = i[""].to_i }
+
+          return rows
+        end
+      end
+      private :search
+
+      def rnum(tdb, parsed_sql)
         if (parsed_sql[:condition] || []).empty?
           tdb.rnum
         else
           query(tdb, parsed_sql).searchcount
         end
       end
-      private :count_rkey
+      private :rnum
 
       def setindex(table_name, name, type)
         type = {

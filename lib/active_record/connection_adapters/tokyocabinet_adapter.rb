@@ -61,14 +61,14 @@ module ActiveRecord
       end
       private :tdbpath
 
-      def count_rkey(tdb, parsed_sql)
+      def rnum(tdb, parsed_sql)
         if (parsed_sql[:condition] || []).empty?
           tdb.rnum
         else
           rkeys(tdb, parsed_sql).length
         end
       end
-      private :count_rkey
+      private :rnum
 
       def setindex(table_name, name, type)
         type = {
