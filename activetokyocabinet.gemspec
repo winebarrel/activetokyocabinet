@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name              = 'activetokyocabinet'
-  spec.version           = '0.1.6'
+  spec.version           = '0.1.7'
   spec.summary           = 'ActiveTokyoCabinet is a library for using Tokyo(Cabinet|Tyrant) under ActiveRecord.'
   spec.files             = Dir.glob('lib/**/*') + Dir.glob('spec/**/*') + %w(README)
   spec.author            = 'winebarrel'
