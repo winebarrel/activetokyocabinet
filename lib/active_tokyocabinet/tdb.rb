@@ -14,6 +14,10 @@ module ActiveTokyoCabinet
             class_eval "def \#{name}; v = self[:\#{name}]; (v.nil? || v.empty?) ? nil : v.#{conv}; end"
           end
 
+          def tdbopen(readonly = false)
+            self.connection.tdbopen(self.table_name, readonly) {|tdb| yield(tdb) }
+          end
+
           def setindex(name, type)
             self.connection.setindex(self.table_name, name, type)
           end

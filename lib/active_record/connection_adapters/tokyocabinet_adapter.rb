@@ -53,7 +53,6 @@ module ActiveRecord
           end
         end
       end
-      private :tdbopen
 
       def tdbpath(table_name)
         File.join(@config[:database], table_name + ".tct")

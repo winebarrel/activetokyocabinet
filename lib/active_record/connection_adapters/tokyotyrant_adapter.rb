@@ -63,7 +63,6 @@ module ActiveRecord
         yield(tdb)
         @connection[table_name] = tdb
       end
-      private :tdbopen
 
       def search(tdb, parsed_sql)
         condition = parsed_sql[:condition] || []
