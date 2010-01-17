@@ -22,67 +22,127 @@ see http://gemcutter.org/gems/activetokyocabinet
 
 == Example
 === database.yml
+
     # TokyoCabinet
     development:
-      adapter: tokyocabinet
-      database: path_of_database_directory
-                               # ~~~~~~~~~
+      adapter:  tokyocabinet
+      database: db/casket/
+                # save to `$RAILS_ROOT/db/casket/*.tct'.
+
     # TokyoTyrant
     development:
       adapter: tokyotyrant
       database:
-        hellos: { host: localhost, port: 1978 }
-        tests: { host: localhost, port: 1979 }
+        emps:  { host: localhost, port: 1978 }
+        depts: { host: localhost, port: 1979 }
 
 === Model
 
-    class Hello < ActiveRecord::Base
+    class Emp < ActiveRecord::Base
       include ActiveTokyoCabinet::TDB
     
       # define schema information.
       # (string, int, float)
-      string :name
+      string :ename
       int    :age
+      string :job
+      float  :sal
+      string :hiredate
     end
 
-=== Example Controller
+=== ActiveRecord API
 
-    class HelloController < ApplicationController
-      def index
-        hello_id = nil
+    # see http://api.rubyonrails.org/classes/ActiveRecord/Base.html
     
-        (20..35).each do |i|
-          hello = Hello.new
-          hello.name = 'yamada'
-          hello.age  = i
-          hello.save!
-          hello_id = hello.id
-        end
+    emp = Emp.find(:first, 
+            :conditions => ["ename = ? and age > ?", "yamada", 25],
+            :order => 'age desc', :limit => 5, :offset => 3)
     
-        p Hello.find(:all, 
-                     :conditions => ["name = ? and age > ?", "yamada", 25],
-                     :order => 'age desc', :limit => 5, :offset => 3)
+    emp.ename = 'yamamoto'
+    emp.age   = 30
+    emp.save
     
-        hello = Hello.find(hello_id)
-        hello.name = 'yamashita'
-        hello.save!
+    emp_list = Emp.find(101, 102, 103)
     
-        p Hello.find(:first, :conditions => ["name = ?", "yamashita"])
-    
-        hello = Hello.find(hello_id)
-        hello.destroy
-    
-        p Hello.find(:first, :conditions => ["name = ?", "yamashita"])
-    
-        p Hello.find(:all)
-    
-        Hello.delete_all(["name = ? and age <= ?", "yamada", 30])
-    
-        p Hello.find(:all)
-
-        render :text => 'hello'
-      end
+    emp_list.each do |i|
+      i.destroy if i.age > 20
     end
+    
+    new_emp = Emp.new
+    new_emp.ename = 'suzuki'
+    new_emp.age   = 27
+    new_emp.save!
+    
+    # not available:
+    # - :include, :group
+    # - `OR'
+    # - Subquery
+    # - Include `ID' in search condition
+    # see http://activetokyocabi.rubyforge.org/svn/trunk/lib/active_tokyocabinet/sqlparser.y
+
+== Expanded operator
+
+    # see http://1978th.net/tokyotyrant/rubydoc/classes/TokyoTyrant/RDBQRY.html
+    
+    # query condition: string begins with
+    emp = Emp.find(:all, :conditions => ['ename bw ?', 'J'])
+    
+    # query condition: string ends with
+    emp = Emp.find(:all, :conditions => ['ename ew ?', 'ES'])
+    
+    # query condition: string is included in
+    emp = Emp.find(:all, :conditions => ['ename inc ?', 'LA'])
+    
+    # query condition: string includes all tokens i 
+    emp = Emp.find(:all, :conditions => ['job incall (?)', ['ANALYST', 'MANAGER']])
+    
+    # query condition: string includes at least one token in
+    emp = Emp.find(:all, :conditions => ['job incany (?)', ['ANALYST', 'MANAGER']])
+    
+    # query condition: string is equal to at least one token in
+    emp = Emp.find(:all, :conditions => ['job in (?)', ['ANALYST', 'MANAGER']])
+    emp = Emp.find(:all, :conditions => ['job anyone (?)', ['ANALYST', 'MANAGER']])
+    
+    # query condition: string matches regular expressions of
+    emp = Emp.find(:all, :conditions => ['ename regexp ?', '^J[AO].+$'])
+    
+    # query condition: number is between two tokens of
+    emp = Emp.find(:all, :conditions => ['age between ? and ?', 20, 30])
+    emp = Emp.find(:all, :conditions => ['age bt (?)', [20, 30]])
+    
+    # query condition: full-text search with the phrase of
+    emp = Emp.find(:all, :conditions => ['ename fts ?', 'MI'])
+    
+    # query condition: full-text search with all tokens in
+    emp = Emp.find(:all, :conditions => ['ename ftsand ?', 'HATSUNE MIKU'])
+    emp = Emp.find(:all, :conditions => ['ename ftsand (?)', ['HATSUNE', 'MIKU']])
+    
+    # query condition: full-text search with at least one token in
+    emp = Emp.find(:all, :conditions => ['hiredate ftsor ?', '1983 DEC'])
+    emp = Emp.find(:all, :conditions => ['hiredate ftsor (?)', ['1983', 'DEC']])
+    
+    # query condition: full-text search with the compound expression of
+    emp = Emp.find(:all, :conditions => ['ename ftsex ?', 'MIKU || RIN'])
+    emp = Emp.find(:all, :conditions => ['ename ftsex ?', 'HATSUNE && MIKU'])
+
+== Low layer API
+
+    Emp.tdbopen do |tdb|
+      pkey = tdb.genuid
+      cols = {"ename" => "tanaka", "age" => "30"}
+      tdb.put(pkey, cols)
+    }
+    
+    Emp.proc(:all, :conditions => ['name = ?', 'sugawara'], :limit => 10) do |tdb, pkey, cols|
+      puts "#{pkey}: #{cols.inspect}
+    end
+    # proc method return empty array.
+
+== Set index
+
+    # see http://1978th.net/tokyotyrant/rubydoc/classes/TokyoTyrant/RDBTBL.html#M000007
+    
+    Emp.setindex(:age, :decimal)
 
 == Related article
 * http://d.hatena.ne.jp/winebarrel/20100106/p1
