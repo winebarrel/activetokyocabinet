@@ -79,7 +79,14 @@ module ActiveRecord
           end
 
           rows = query(tdb, parsed_sql).searchget
-          rows.each {|i| i['id'] = i[""].to_i }
+
+          if block_given?
+            rows.each do |i|
+              yield(tdb, i[""].to_i, i)
+            end
+          else
+            rows.each {|i| i['id'] = i[""].to_i }
+          end
 
           return rows
         end

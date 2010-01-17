@@ -1,6 +1,43 @@
+require 'active_record/base'
 require 'active_record/connection_adapters/abstract_adapter'
 require 'active_tokyocabinet/tdb'
 require 'active_tokyocabinet/sqlparser.tab'
+
+module ActiveRecord
+  class Base
+    class << self
+      def find_by_sql_with_activetokyocabinet(args)
+        retval = nil
+
+        if self.include?(ActiveTokyoCabinet::TDB) and args.kind_of?(Array)
+          sql, proc = args
+          connection.select(sanitize_sql(sql), "#{name} Load", &proc)
+          retval = []
+        else
+          retval = find_by_sql_without_activetokyocabinet(args)
+        end
+
+        return retval
+      end
+      alias_method_chain :find_by_sql, :activetokyocabinet
+
+      def construct_finder_sql_with_activetokyocabinet(options)
+        sql = construct_finder_sql_without_activetokyocabinet(options)
+
+        if self.include?(ActiveTokyoCabinet::TDB) and (proc = options[:activetokyocabinet_proc])
+          sql = [sql, proc]
+        end
+
+        return sql
+      end
+      alias_method_chain :construct_finder_sql, :activetokyocabinet
+
+      unless VALID_FIND_OPTIONS.include?(:activetokyocabinet_proc)
+        VALID_FIND_OPTIONS << :activetokyocabinet_proc
+      end
+    end
+  end
+end
 
 module ActiveRecord
   module ConnectionAdapters
@@ -23,6 +60,10 @@ module ActiveRecord
           tdbopen(parsed_sql[:table], true) do |tdb|
             if (count = parsed_sql[:count])
               rows = [{count => rnum(tdb, parsed_sql)}]
+            elsif block_given?
+              rows = search(tdb, parsed_sql) do |_tdb, rkey, rcols|
+                yield([_tdb, rkey, rcols])
+              end
             else
               rows = search(tdb, parsed_sql)
             end
@@ -110,6 +151,12 @@ module ActiveRecord
 
         rkeys(tdb, parsed_sql).each do |rkey|
           rcols = tdb.get(rkey)
+
+          if block_given?
+            yield(tdb, rkey.to_i, rcols)
+            next
+          end
+
           next if rcols.nil?
   
           unless select_list.nil? or select_list.empty?

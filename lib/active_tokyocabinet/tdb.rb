@@ -21,6 +21,14 @@ module ActiveTokyoCabinet
           def setindex(name, type)
             self.connection.setindex(self.table_name, name, type)
           end
+
+          def proc(*args, &block)
+            if block and (options = args.last) and options.kind_of?(Hash)
+              options[:activetokyocabinet_proc] = block
+            end
+
+            self.find(*args)
+          end
         }
       end
     end
