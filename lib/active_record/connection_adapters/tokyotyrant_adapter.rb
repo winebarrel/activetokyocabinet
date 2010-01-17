@@ -45,9 +45,7 @@ module ActiveRecord
         end
       end
 
-      def tdbopen(parsed_sql)
-        table_name = parsed_sql[:table]
-
+      def tdbopen(table_name, readonly = false)
         unless table_exists?(table_name)
           raise "Table does not exist: #{table_name}"
         end

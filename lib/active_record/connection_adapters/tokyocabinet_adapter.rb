@@ -28,11 +28,10 @@ module ActiveRecord
         File.exist?(path)
       end
 
-      def tdbopen(parsed_sql)
-        table_name = parsed_sql[:table]
+      def tdbopen(table_name, readonly = false)
         path = tdbpath(table_name)
 
-        if File.exist?(path) and parsed_sql[:command] == :select
+        if File.exist?(path) and readonly
           omode = TokyoCabinet::TDB::OREADER
         else
           omode = TokyoCabinet::TDB::OWRITER | TokyoCabinet::TDB::OCREAT

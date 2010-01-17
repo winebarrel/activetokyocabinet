@@ -20,7 +20,7 @@ module ActiveRecord
         log(sql, name) do
           parsed_sql = ActiveTokyoCabinet::SQLParser.new(sql).parse
 
-          tdbopen(parsed_sql) do |tdb|
+          tdbopen(parsed_sql[:table], true) do |tdb|
             if (count = parsed_sql[:count])
               rows = [{count => rnum(tdb, parsed_sql)}]
             else
@@ -38,7 +38,7 @@ module ActiveRecord
         log(sql, name) do
           parsed_sql = ActiveTokyoCabinet::SQLParser.new(sql).parse
 
-          tdbopen(parsed_sql) do |tdb|
+          tdbopen(parsed_sql[:table]) do |tdb|
             pkey = tdb.genuid
             keys = parsed_sql[:column_list]
             vals = parsed_sql[:value_list]
@@ -64,7 +64,7 @@ module ActiveRecord
         log(sql, name) do
           parsed_sql = ActiveTokyoCabinet::SQLParser.new(sql).parse
 
-          tdbopen(parsed_sql) do |tdb|
+          tdbopen(parsed_sql[:table]) do |tdb|
             set_clause_list = parsed_sql[:set_clause_list]
 
             rkeys(tdb, parsed_sql).each do |rkey|
@@ -92,7 +92,7 @@ module ActiveRecord
         log(sql, name) do
           parsed_sql = ActiveTokyoCabinet::SQLParser.new(sql).parse
 
-          tdbopen(parsed_sql) do |tdb|
+          tdbopen(parsed_sql[:table]) do |tdb|
             unless query(tdb, parsed_sql).searchout
               ecode = tdb.ecode
               raise '%s: %s' % [tdb.errmsg(ecode), sql]
