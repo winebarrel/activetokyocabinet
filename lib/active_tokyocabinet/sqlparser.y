@@ -109,7 +109,7 @@ rule
                           {
                             :QOSTRASC
                           }
-                        | ORDER
+                        | ORDER_SPEC
 
   limit_clause          :
                           {
@@ -221,7 +221,7 @@ def scan
     elsif (tok = @ss.scan /(?:INSERT|INTO|VALUES|SELECT|FROM|WHERE|AND|UPDATE|SET|DELETE|COUNT|ORDER|BY|LIMIT|OFFSET|AS)\b/i)
       yield tok.upcase.to_sym, tok
     elsif (tok = @ss.scan /(?:ASC|DESC|STRASC|STRDESC|NUMASC|NUMDESC)\b/i)
-      yield :ORDER, tcordertype(tok)
+      yield :ORDER_SPEC, tcordertype(tok)
     elsif (tok = @ss.scan /NULL\b/i)
       yield :NULL, nil
     elsif (tok = @ss.scan /'(?:[^']|'')*'/) #'
