@@ -134,9 +134,20 @@ module ActiveRecord
           parsed_sql = ActiveTokyoCabinet::SQLParser.new(sql).parse
 
           tdbopen(parsed_sql[:table]) do |tdb|
-            unless query(tdb, parsed_sql).searchout
-              ecode = tdb.ecode
-              raise '%s: %s' % [tdb.errmsg(ecode), sql]
+            condition = parsed_sql[:condition] || []
+
+            unless cond?(condition)
+              [condition].flatten.each do |rkey| 
+                unless tdb.out(rkey)
+                  ecode = tdb.ecode
+                  raise '%s: %s' % [tdb.errmsg(ecode), sql]
+                end
+              end
+            else
+              unless query(tdb, parsed_sql).searchout
+                ecode = tdb.ecode
+                raise '%s: %s' % [tdb.errmsg(ecode), sql]
+              end
             end
           end
         end
