@@ -475,6 +475,38 @@ describe 'tokyotyrant:' do
     end
   end
 
+  it "destroy employee" do
+    Employee.count.should == 17
+    employee = Employee.find(:first, :conditions => {:ename => 'KING'})
+    employee_id = employee.id
+    Employee.find(employee_id).should_not be_nil
+    employee.destroy
+    Employee.count.should == 16
+    Employee.find_by_id(employee_id).should be_nil
+  end
+
+  it "destroy all employee" do
+    Employee.count.should == 17
+    Employee.destroy_all
+    Employee.count.should == 0
+  end
+
+  it "delete department" do
+    Department.count.should == 5
+    department = Department.find(:first, :conditions => {:dname => 'SALES'})
+    department_id = department.id
+    Department.find(department_id).should_not be_nil
+    department.delete
+    Department.count.should == 4
+    Department.find_by_id(department_id).should be_nil
+  end
+
+  it "delete all department" do
+    Department.count.should == 5
+    Department.delete_all
+    Department.count.should == 0
+  end
+
   after do
      TokyoTyrantSpec.clean
   end
