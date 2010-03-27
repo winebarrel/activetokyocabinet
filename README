@@ -144,23 +144,7 @@ see http://gemcutter.org/gems/activetokyocabinet
     
     Emp.setindex(:age, :decimal)
 
-== Example
-=== database.yml
-
-    # TokyoCabinet
-    development:
-      adapter:  tokyocabinet
-      database: db/casket/
-                # save to `$RAILS_ROOT/db/casket/*.tct'.
-
-    # TokyoTyrant
-    development:
-      adapter: tokyotyrant
-      database:
-        emps:  { host: localhost, port: 1978 }
-        depts: { host: localhost, port: 1979 }
-
-== Schema free
+=== Schema free
 
     class Book < ActiveRecord::Base
       include ActiveTokyoCabinet::TDB
