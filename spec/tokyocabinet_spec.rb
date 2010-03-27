@@ -507,6 +507,75 @@ describe 'tokyocabinet:' do
     Department.count.should == 0
   end
 
+  it "schema free" do
+    Book.create(:foo => 'bar', :zoo => 'baz', :n => 100)
+    Book.create!(:hoge => 'fuga', :n => 200)
+
+    book = Book.new
+    book.xxx = 'XXX'
+    book.yyy = 'YYY'
+    book.zzz = 'ZZZ'
+    book.n = 300
+    book.save!
+
+    Book.count.should == 3
+
+    book = Book.find(2)
+    book.foo.should be_nil
+    book.hoge.should == 'fuga'
+    book.n.should == '200'
+
+    book.n = 250
+    book.save
+
+    books = Book.find(:all, :conditions => ['hoge = ?', 'fuga'])
+    books.length.should == 1
+    books[0].xxx.should be_nil
+    books[0].hoge.should == 'fuga'
+    books[0].n.should == '250'
+
+    books = Book.find(:all, :conditions => ['n >= ?', 200])
+    books.length.should == 2
+    books = books.sort_by {|i| i.id }
+ 
+    books[0].id.should == 2
+    books[0].hoge.should == 'fuga'
+    books[0].n.should == '250'
+
+    books[1].id.should == 3
+    books[1].xxx.should == 'XXX'
+    books[1].yyy.should == 'YYY'
+    books[1].zzz.should == 'ZZZ'
+    books[1].n.should == '300'
+
+    Book.update_all("xxx = 'xxx'", ['n > ?', 100])
+
+    books = Book.find(:all)
+    books.length.should == 3
+    books = books.sort_by {|i| i.id }
+
+    books[0].id.should == 1
+    books[0].xxx.should be_nil
+
+    books[1].id.should == 2
+    books[1].xxx.should == 'xxx'
+
+    books[2].id.should == 3
+    books[2].xxx.should == 'xxx'
+
+    Book.find(2).destroy
+
+    books = Book.find(:all)
+    books.length.should == 2
+    books = books.sort_by {|i| i.id }
+
+    books[0].id.should == 1
+    books[1].id.should == 3
+
+    Book.delete_all
+    Book.count.should == 0
+  end
+
   after do
     TokyoCabinetSpec.clean
   end

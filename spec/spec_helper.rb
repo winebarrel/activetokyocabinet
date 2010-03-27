@@ -8,6 +8,7 @@ require 'active_record'
 require 'active_tokyocabinet/tdb'
 require "#{$wd}/models/employee"
 require "#{$wd}/models/department"
+require "#{$wd}/models/book"
 
 ActiveRecord::Base.logger = Logger.new($stderr)
 ActiveRecord::Base.logger.level = Logger::INFO
@@ -188,6 +189,7 @@ module ActiveTokyoCabinetSpec
       def clean
         FileUtils.rm_f "#{$wd}/employees.tct"
         FileUtils.rm_f "#{$wd}/departments.tct"
+        FileUtils.rm_f "#{$wd}/books.tct"
       end
     end # class << self
   end # module TokyoCabinetSpec
