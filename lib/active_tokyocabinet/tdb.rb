@@ -2,13 +2,42 @@ module ActiveTokyoCabinet
   module TDB
     def self.included(mod)
       mod.instance_eval %{
-        def schema_free
+        def schema_free(options = {})
           raise 'invalid definition: schema is already defined' if @__schema_defined
           @__schema_free_defined = true
-          @columns = []
+
+          primary_key = ActiveRecord::ConnectionAdapters::Column.new('id', nil)
+          primary_key.primary = true
+          @columns = [primary_key]
 
           class_eval <<-EOS
+            @@__with_timestamp = \#{options[:timestamp].inspect}
+
             alias :__respond_to? :respond_to?
+
+            def attributes_with_quotes(include_primary_key = true, include_readonly_attributes = true, attribute_names = @attributes.keys)
+              quoted = {}
+              connection = self.class.connection
+
+              __attributes = (attributes || {}).merge(@__attributes || {})
+              __attributes.delete('id')
+
+              if @@__with_timestamp == :on
+                %w(created_at updated_at).each {|i| __attributes.delete(i) }
+              elsif @@__with_timestamp
+                %w(created_on updated_on).each {|i| __attributes.delete(i) }
+              else
+                %w(created_on updated_on created_at updated_at).each do |i|
+                  __attributes.delete(i)
+                end
+              end
+
+              __attributes.each do |name, value|
+                quoted[name] = connection.quote(value)
+              end
+
+              quoted
+            end
 
             def respond_to?(name, priv = false); true; end
 
