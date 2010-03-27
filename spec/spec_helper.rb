@@ -204,6 +204,7 @@ module ActiveTokyoCabinetSpec
           :database => {
             :employees   => {:host => 'localhost', :port => 1978},
             :departments => {:host => 'localhost', :port => 1979},
+            :books       => {:host => 'localhost', :port => 1980},
           }
         )
       end
@@ -215,6 +216,7 @@ module ActiveTokyoCabinetSpec
 
         `ttserver -port 1978 -dmn -pid "#{$wd}/employees.pid" "#{$wd}/employees.tct"`
         `ttserver -port 1979 -dmn -pid "#{$wd}/departments.pid" "#{$wd}/departments.tct"`
+        `ttserver -port 1980 -dmn -pid "#{$wd}/books.pid" "#{$wd}/books.tct"`
         sleep 3
       end
 

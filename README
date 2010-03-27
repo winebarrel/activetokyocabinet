@@ -80,7 +80,7 @@ see http://gemcutter.org/gems/activetokyocabinet
     # - Include `ID' in search condition
     # see http://activetokyocabi.rubyforge.org/svn/trunk/lib/active_tokyocabinet/sqlparser.y
 
-== Expanded operator
+=== Expanded operator
 
     # see http://1978th.net/tokyotyrant/rubydoc/classes/TokyoTyrant/RDBQRY.html
     
@@ -125,7 +125,7 @@ see http://gemcutter.org/gems/activetokyocabinet
     emp = Emp.find(:all, :conditions => ['ename ftsex ?', 'MIKU || RIN'])
     emp = Emp.find(:all, :conditions => ['ename ftsex ?', 'HATSUNE && MIKU'])
 
-== Low layer API
+=== Low layer API
 
     Emp.tdbopen do |tdb|
       pkey = tdb.genuid
@@ -138,11 +138,39 @@ see http://gemcutter.org/gems/activetokyocabinet
     end
     # proc method return empty array.
 
-== Set index
+=== Set index
 
     # see http://1978th.net/tokyotyrant/rubydoc/classes/TokyoTyrant/RDBTBL.html#M000007
     
     Emp.setindex(:age, :decimal)
+
+== Example
+=== database.yml
+
+    # TokyoCabinet
+    development:
+      adapter:  tokyocabinet
+      database: db/casket/
+                # save to `$RAILS_ROOT/db/casket/*.tct'.
+
+    # TokyoTyrant
+    development:
+      adapter: tokyotyrant
+      database:
+        emps:  { host: localhost, port: 1978 }
+        depts: { host: localhost, port: 1979 }
+
+== Schema free
+
+    class Book < ActiveRecord::Base
+      include ActiveTokyoCabinet::TDB
+      schema_free :timestamp => true
+    end
+    
+    Book.create(:title => 'photo book', :author => 'Tanaka Takeshi', :price => 200)
+    Book.create(:title => 'note book', :price => 50)
+    
+    books = Book.find(:all, :conditions => ['author = ?', 'Tanaka Takeshi'])
 
 == Related article
 * http://d.hatena.ne.jp/winebarrel/20100106/p1
